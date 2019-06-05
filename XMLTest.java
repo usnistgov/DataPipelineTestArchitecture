@@ -1,13 +1,10 @@
-package com.github.djharten.test_xml;
-
-//import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 
-public class Main {
+public class XMLTest {
 
     /*
      * Global that keeps track of the level of the tree we are in. Just used for aesthetics.
@@ -30,7 +27,6 @@ public class Main {
      * return it.
      */
     private static Document createDocument() throws Exception {
-        //File xmlFile = new File("C:\\Users\\djh8\\IdeaProjects\\Testing\\src\\com\\github\\djharten\\test_xml\\probe.xml");
         URL url = new URL("http://mtconnect.mazakcorp.com:5609/probe");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
