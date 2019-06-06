@@ -10,7 +10,7 @@ class NodeProcessor {
     private Node root;
     private static String dashes = "";
     private static int firstSequence;
-    public int nextSequence;
+    public int lastSequence;
 
     NodeProcessor(Node root){
         this.root = root;
@@ -49,7 +49,7 @@ class NodeProcessor {
         if(name.equals("firstSequence")){
             firstSequence = Integer.parseInt(val);
         } else if(name.equals("lastSequence")){
-            this.nextSequence = Integer.parseInt(val);
+            this.lastSequence = Integer.parseInt(val);
         }
     }
 
@@ -92,12 +92,12 @@ class NodeProcessor {
     /**************************************/
     /* GETTERS AND SETTERS */
     /**************************************/
-    void getRootData() {
-        listNodeData(root);
+    Node getRootNode() {
+        return this.root;
     }
 
-    void setRoot(Node node) {
-        this.root = node;
+    void getRootData() {
+        listNodeData(root);
     }
 
     void setDashes(){
@@ -108,7 +108,7 @@ class NodeProcessor {
         return firstSequence;
     }
 
-    int getNextSequence() {
-        return nextSequence;
+    int getLastSequence() {
+        return lastSequence;
     }
 }
