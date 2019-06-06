@@ -1,6 +1,6 @@
 package com.github.djharten.test_xml;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Node;
 
 public class Main {
 
@@ -9,10 +9,11 @@ public class Main {
      * grab the root node of the XML tree, then parse through the tree, grabbing and printing all data.
      */
     public static void main(String[] args) throws Exception {
-        //Node node = createDocumentConnector();
-        //printDataConsole(node);
+        Node node = createDocumentConnector();
+        NodeProcessor processor = new NodeProcessor(node);
+        //printDataConsole(processor);
         long start = System.nanoTime();
-        parseToCurrent();
+        parseToCurrent(processor);
         long end = System.nanoTime();
         long dif = (end - start) / 1_000_000_000;
         System.out.println(dif);
@@ -35,34 +36,28 @@ public class Main {
     /*
      * This option prints out all of the parsed XML data in the console. Mainly used for testing purposes.
      */
-    private static void printDataConsole(Node node){
-        NodeProcessor processor = new NodeProcessor(node);
+    private static void printDataConsole(NodeProcessor processor){
         processor.getRootData();
-        processor.parseTree(node);
+        processor.parseTree(processor.getRootNode());
         processor.setDashes();
     }
 
-    private static void parseToCurrent() throws Exception {
-        Node node = createDocumentConnector();
-        printDataConsole(node);
-        int startSequence = NodeProcessor.getFirstSequence() + 500;
+    private static void parseToCurrent(NodeProcessor processor) throws Exception {
+        printDataConsole(processor);
+        int startSequence = processor.getFirstSequence() + 500;
         boolean caughtUp = false;
-        while(!caughtUp){
-            NodeProcessor processor = new NodeProcessor(node);
-            processor.getRootData();
-            processor.parseTree(node);
-            processor.setDashes();
-            int endSequence = processor.nextSequence;
+        while (!caughtUp) {
+            String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + startSequence;
+            Node node = node = createDocumentConnector(newURL);
+            printDataConsole(processor);
+            int endSequence = processor.getLastSequence();
             int dif = Math.abs(endSequence - startSequence);
-            if(startSequence % 1000 == 0)
+            if (startSequence % 1000 == 0)
                 System.out.println(startSequence + " " + endSequence + " dif: " + dif);
-            if(dif < 500)
+            if (dif < 500)
                 caughtUp = true;
-            else {
-                String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + startSequence;
+            else
                 startSequence++;
-                node = createDocumentConnector(newURL);
-            }
         }
     }
 
