@@ -10,10 +10,12 @@ class NodeProcessor {
     private Node root;
     private static String dashes = "";
     private static int firstSequence;
-    public int lastSequence;
+    private int lastSequence;
+    private boolean printData;
 
     NodeProcessor(Node root){
         this.root = root;
+        this.printData = true;
     }
 
     /*
@@ -24,12 +26,15 @@ class NodeProcessor {
      */
     private void listNodeData(Node node) {
         String nodeName = node.getNodeName();
+        StringBuilder data;
         if(nodeName.equals("#text") || node.getAttributes() == null )
             return;
-
-        //System.out.println(dashes + nodeName);
-        StringBuilder data = processNodeData(node);
-       // System.out.print(data);
+        if(this.printData){
+            System.out.println(dashes + nodeName);
+            data = processNodeData(node);
+            System.out.print(data);
+        } else
+            data = processNodeData(node);
     }
 
     private StringBuilder processNodeData(Node node) {
@@ -40,17 +45,17 @@ class NodeProcessor {
             String attrName = attr.getNodeName();
             String attrVal = attr.getNodeValue();
             checkSequence(attrName, attrVal);
-            sb.append(dashes).append("----[Attr]: ").append(attrName).append(" , [Val]: ").append(attrVal).append("\n");
+            if(this.printData)
+                sb.append(dashes).append("----[Attr]: ").append(attrName).append(" , [Val]: ").append(attrVal).append("\n");
         }
         return sb;
     }
 
     private void checkSequence(String name, String val){
-        if(name.equals("firstSequence")){
+        if(name.equals("firstSequence"))
             firstSequence = Integer.parseInt(val);
-        } else if(name.equals("lastSequence")){
+        else if(name.equals("lastSequence"))
             this.lastSequence = Integer.parseInt(val);
-        }
     }
 
     /*
@@ -67,7 +72,7 @@ class NodeProcessor {
         for (int i = 0; i < nList.getLength(); i++) {
             Node child = nList.item(i);
             listNodeData(child);
-            if(child.hasChildNodes()) {
+            if (child.hasChildNodes()) {
                 dashes += "--";
                 parseTree(child);
             }
@@ -84,8 +89,8 @@ class NodeProcessor {
     private void checkLastChildForText(Node node) {
         if(node.getNodeType() == Node.TEXT_NODE) {
             String textEle = node.getTextContent().replace("\n", "").replace("\r", "").replace(" ", "");
-           // if(textEle.length() > 0)
-             // System.out.println(dashes + "----[Contents]: " + textEle);
+           if(textEle.length() > 0 && this.printData)
+               System.out.println(dashes + "----[Contents]: " + textEle);
         }
     }
 
@@ -96,6 +101,10 @@ class NodeProcessor {
         return this.root;
     }
 
+    void setRootNode(Node node) {
+        this.root = node;
+    }
+
     void getRootData() {
         listNodeData(root);
     }
@@ -104,11 +113,19 @@ class NodeProcessor {
         dashes = "";
     }
 
-    static int getFirstSequence(){
+    int getFirstSequence(){
         return firstSequence;
     }
 
     int getLastSequence() {
         return lastSequence;
+    }
+
+    int getSequenceDifference(int first){
+        return Math.abs(lastSequence - first);
+    }
+
+    void setPrintData(boolean bool){
+        this.printData = bool;
     }
 }
