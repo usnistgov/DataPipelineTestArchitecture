@@ -1,131 +1,102 @@
 package com.github.djharten.test_xml;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-class NodeProcessor {
+public class Main {
 
-    private Node root;
-    private static String dashes = "";
-    private static int firstSequence;
-    private int lastSequence;
-    private boolean printData;
-
-    NodeProcessor(Node root){
-        this.root = root;
-        this.printData = true;
+    /*
+     * Establishes an initial connection at http://mtconnect.mazakcorp.com:5609/current, then times various tests.
+     */
+    public static void main(String[] args) throws Exception {
+        Node node = createDocumentConnector();
+        NodeProcessor processor = new NodeProcessor(node);
+        //printDataConsole(processor);
+        long start = System.nanoTime();
+        parseToCurrent(processor);
+        //traverseSequenceList(processor);
+        long end = System.nanoTime();
+        long dif = (end - start);
+        System.out.println(dif);
     }
 
     /*
-     * First we check if the nodeName is equal to "#text". If it is, this is actually an empty child node
-     * that was created due to unnecessary whitespace in the XML document(can validate the XML doc with
-     * https://www.xmlvalidation.com/ to see). We also check if the node has no attributes. If either of these
-     * cases are true we return, otherwise we grab each key-value pair in the element and print it out.
+     * Default method that establishes a new connection at http://mtconnect.mazakcorp.com:5609/current,
+     * takes the XML page from that site and turns it into a normalized Document. We then return the root
+     * node of that XML tree.
      */
-    private void listNodeData(Node node) {
-        String nodeName = node.getNodeName();
-        StringBuilder data;
-        if(nodeName.equals("#text") || node.getAttributes() == null )
-            return;
-        if(this.printData){
-            System.out.println(dashes + nodeName);
-            data = processNodeData(node);
-            System.out.print(data);
-        } else
-            data = processNodeData(node);
-    }
-
-    private StringBuilder processNodeData(Node node) {
-        StringBuilder sb = new StringBuilder();
-        NamedNodeMap attributes = node.getAttributes();
-        for (int i = 0; i < attributes.getLength(); i++) {
-            Attr attr = (Attr) attributes.item(i);
-            String attrName = attr.getNodeName();
-            String attrVal = attr.getNodeValue();
-            checkSequence(attrName, attrVal);
-            if(this.printData)
-                sb.append(dashes).append("----[Attr]: ").append(attrName).append(" , [Val]: ").append(attrVal).append("\n");
-        }
-        return sb;
-    }
-
-    private void checkSequence(String name, String val){
-        if(name.equals("firstSequence"))
-            firstSequence = Integer.parseInt(val);
-        else if(name.equals("lastSequence"))
-            this.lastSequence = Integer.parseInt(val);
+    private static Node createDocumentConnector() throws Exception {
+        DocumentConnector doc = new DocumentConnector();
+        doc.createConnection();
+        doc.createDocument();
+        return doc.getDocument().getDocumentElement();
     }
 
     /*
-     * Checks if our node is null, if so we have exhausted that branch of the tree and return. Otherwise,
-     * create a list of the current node's children. Go through the tree, grabbing each child, printing out
-     * their data, and working through the tree until the list is exhausted. After each branch is exhausted
-     * we check the tree's last node to see if their is text content.
+     * Creates a document with a specified URL. This is called after we grab the initial page from
+     * http://mtconnect.mazakcorp.com:5609/current, each subsequent call to create a connection is
+     * at http://mtconnect.mazakcorp.com:5609/sample?from=xxx, where xxx = the next sequence number.
+     * We then return the root node of that XML tree.
      */
-    void parseTree(Node node) {
-        if (node == null)
-            return;
-
-        NodeList nList = node.getChildNodes();
-        for (int i = 0; i < nList.getLength(); i++) {
-            Node child = nList.item(i);
-            listNodeData(child);
-            if (child.hasChildNodes()) {
-                dashes += "--";
-                parseTree(child);
-            }
-            checkLastChildForText(child);
-        }
-        if(dashes.length() != 0)
-            dashes = dashes.substring(0, dashes.length() - 2);
+    private static Node createDocumentConnector(String url) throws Exception {
+        DocumentConnector doc = new DocumentConnector(url);
+        doc.createConnection();
+        doc.createDocument();
+        return doc.getDocument().getDocumentElement();
     }
 
     /*
-     * Checks a leaf node in a tree for text content data in the node. Fixes whitespace issues. If
-     * anyone says I wrote this I will vehemently deny it...please don't tell people how I live.
+     * This option prints out all of the parsed XML data in the console. Mainly used for testing purposes.
      */
-    private void checkLastChildForText(Node node) {
-        if(node.getNodeType() == Node.TEXT_NODE) {
-            String textEle = node.getTextContent().replace("\n", "").replace("\r", "").replace(" ", "");
-           if(textEle.length() > 0 && this.printData)
-               System.out.println(dashes + "----[Contents]: " + textEle);
+    private static void printDataConsole(NodeProcessor processor){
+        processor.getRootData();
+        processor.parseTree(processor.getRootNode());
+        processor.setDashes();
+    }
+
+    /*
+     * Starting at the current XML page, we parse through the document and find the first and last sequence, then
+     * go back to the first sequence + 10(a buffer to grab the page in time, since it can update 3-5 times / second),
+     * and grab, then parse all of the deltas up until we get to the end sequence, updating the end sequence after
+     * each iteration. We then have all the available data. Used to time how long it will take us to make the
+     * connection, grab the XML data, and parse through the data strictly in Java.
+     */
+    private static void parseToCurrent(NodeProcessor processor) throws Exception {
+        printDataConsole(processor);
+        int firstSequence = processor.getFirstSequence();
+        while (processor.getSequenceDifference(firstSequence) != 0) {
+            String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + (firstSequence + 10);
+            Node node = createDocumentConnector(newURL);
+            processor.setRootNode(node);
+            //processor.setPrintData(false);
+            printDataConsole(processor);
+            if (firstSequence % 1000 == 0)
+                System.out.println(firstSequence + " " + processor.getLastSequence() + " dif: " + processor.getSequenceDifference(firstSequence));
+            firstSequence++;
         }
     }
 
-    /**************************************/
-    /* GETTERS AND SETTERS */
-    /**************************************/
-    Node getRootNode() {
-        return this.root;
+    /*
+     * Starting at the current XML page, we parse through the document and find the first and last sequence, then
+     * go back to the first sequence + 10(a buffer to grab the page in time, since it can update 3-5 times / second),
+     * and continue making connections and grabbing each XML page up to the end sequence until we reach the last one.
+     * Used to time how long it will take us to make the connection and grab the XML data strictly in Java.
+     * Does NOT parse through the data.
+     *
+     * Note: This also does not update the endSequence value because that would involve parsing the data, however
+     * these testing speeds can be compared against ones that do parse when the machine is turned off and not
+     * updating(roughly 130k pages).
+     */
+    private static void traverseSequenceList(NodeProcessor processor) throws Exception {
+        //processor.setPrintData(false);
+        printDataConsole(processor);
+        int firstSequence = processor.getFirstSequence();
+        while(processor.getSequenceDifference(firstSequence) != 0){
+            String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + (firstSequence + 10);
+            Node node = createDocumentConnector(newURL);
+            if (firstSequence % 1000 == 0)
+                System.out.println(firstSequence + " " + processor.getLastSequence() + " dif: " + processor.getSequenceDifference(firstSequence));
+            firstSequence++;
+        }
     }
 
-    void setRootNode(Node node) {
-        this.root = node;
-    }
-
-    void getRootData() {
-        listNodeData(root);
-    }
-
-    void setDashes(){
-        dashes = "";
-    }
-
-    int getFirstSequence(){
-        return firstSequence;
-    }
-
-    int getLastSequence() {
-        return lastSequence;
-    }
-
-    int getSequenceDifference(int first){
-        return Math.abs(lastSequence - first);
-    }
-
-    void setPrintData(boolean bool){
-        this.printData = bool;
-    }
 }
