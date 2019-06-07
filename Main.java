@@ -5,8 +5,7 @@ import org.w3c.dom.Node;
 public class Main {
 
     /*
-     * Create a document using the mazakorp.mtconnect probe page and return it as a normalized document,
-     * grab the root node of the XML tree, then parse through the tree, grabbing and printing all data.
+     * Establishes an initial connection at http://mtconnect.mazakcorp.com:5609/current, then times various tests.
      */
     public static void main(String[] args) throws Exception {
         Node node = createDocumentConnector();
@@ -14,11 +13,17 @@ public class Main {
         //printDataConsole(processor);
         long start = System.nanoTime();
         parseToCurrent(processor);
+        //traverseSequenceList(processor);
         long end = System.nanoTime();
-        long dif = (end - start) / 1_000_000_000;
+        long dif = (end - start);
         System.out.println(dif);
     }
 
+    /*
+     * Default method that establishes a new connection at http://mtconnect.mazakcorp.com:5609/current,
+     * takes the XML page from that site and turns it into a normalized Document. We then return the root
+     * node of that XML tree.
+     */
     private static Node createDocumentConnector() throws Exception {
         DocumentConnector doc = new DocumentConnector();
         doc.createConnection();
@@ -26,6 +31,12 @@ public class Main {
         return doc.getDocument().getDocumentElement();
     }
 
+    /*
+     * Creates a document with a specified URL. This is called after we grab the initial page from
+     * http://mtconnect.mazakcorp.com:5609/current, each subsequent call to create a connection is
+     * at http://mtconnect.mazakcorp.com:5609/sample?from=xxx, where xxx = the next sequence number.
+     * We then return the root node of that XML tree.
+     */
     private static Node createDocumentConnector(String url) throws Exception {
         DocumentConnector doc = new DocumentConnector(url);
         doc.createConnection();
@@ -42,21 +53,49 @@ public class Main {
         processor.setDashes();
     }
 
+    /*
+     * Starting at the current XML page, we parse through the document and find the first and last sequence, then
+     * go back to the first sequence + 10(a buffer to grab the page in time, since it can update 3-5 times / second),
+     * and grab, then parse all of the deltas up until we get to the end sequence, updating the end sequence after
+     * each iteration. We then have all the available data. Used to time how long it will take us to make the
+     * connection, grab the XML data, and parse through the data strictly in Java.
+     */
     private static void parseToCurrent(NodeProcessor processor) throws Exception {
         printDataConsole(processor);
-        int startSequence = processor.getFirstSequence() + 10;
-        int dif = -1;
-        while (dif != 0) {
-            String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + startSequence;
+        int firstSequence = processor.getFirstSequence();
+        while (processor.getSequenceDifference(firstSequence) != 0) {
+            String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + (firstSequence + 10);
             Node node = createDocumentConnector(newURL);
-            processor = new NodeProcessor(node);
+            processor.setRootNode(node);
+            //processor.setPrintData(false);
             printDataConsole(processor);
-            int endSequence = processor.getLastSequence();
-            dif = Math.abs(startSequence - endSequence);
-            if (startSequence % 1000 == 0)
-                System.out.println(startSequence + " " + endSequence + " dif: " + dif);
-            if (dif != 0)
-                startSequence++;
+            if (firstSequence % 1000 == 0)
+                System.out.println(firstSequence + " " + processor.getLastSequence() + " dif: " + processor.getSequenceDifference(firstSequence));
+            firstSequence++;
+        }
+    }
+
+    /*
+     * Starting at the current XML page, we parse through the document and find the first and last sequence, then
+     * go back to the first sequence + 10(a buffer to grab the page in time, since it can update 3-5 times / second),
+     * and continue making connections and grabbing each XML page up to the end sequence until we reach the last one.
+     * Used to time how long it will take us to make the connection and grab the XML data strictly in Java.
+     * Does NOT parse through the data.
+     *
+     * Note: This also does not update the endSequence value because that would involve parsing the data, however
+     * these testing speeds can be compared against ones that do parse when the machine is turned off and not
+     * updating(roughly 130k pages).
+     */
+    private static void traverseSequenceList(NodeProcessor processor) throws Exception {
+        //processor.setPrintData(false);
+        printDataConsole(processor);
+        int firstSequence = processor.getFirstSequence();
+        while(processor.getSequenceDifference(firstSequence) != 0){
+            String newURL = "http://mtconnect.mazakcorp.com:5609/sample?from=" + (firstSequence + 10);
+            Node node = createDocumentConnector(newURL);
+            if (firstSequence % 1000 == 0)
+                System.out.println(firstSequence + " " + processor.getLastSequence() + " dif: " + processor.getSequenceDifference(firstSequence));
+            firstSequence++;
         }
     }
 
