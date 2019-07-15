@@ -1,5 +1,3 @@
-package com.github.djharten.test_xml;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -26,15 +24,13 @@ class NodeProcessor {
      */
     private void listNodeData(Node node) {
         String nodeName = node.getNodeName();
-        StringBuilder data;
         if(nodeName.equals("#text") || node.getAttributes() == null )
             return;
+        StringBuilder data = processNodeData(node);
         if(this.printData){
             System.out.println(dashes + nodeName);
-            data = processNodeData(node);
             System.out.print(data);
-        } else
-            data = processNodeData(node);
+        }
     }
 
     private StringBuilder processNodeData(Node node) {
@@ -99,10 +95,6 @@ class NodeProcessor {
     /**************************************/
     Node getRootNode() {
         return this.root;
-    }
-
-    void setRootNode(Node node) {
-        this.root = node;
     }
 
     void getRootData() {
