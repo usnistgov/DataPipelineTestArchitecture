@@ -1,5 +1,3 @@
-package com.github.djharten.test_xml;
-
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -55,19 +53,19 @@ final class DocumentConnector {
     /* GETTERS AND SETTERS */
     /**************************************/
 
-    String getURL(){
-        return currentURL;
-    }
-
-    void setURL(String url) {
-        this.currentURL = url;
-    }
-
     Document getDocument(){
         return doc;
     }
 
-    void setDocument(Document doc) {
-        this.doc = doc;
+    String getCurrentURL() {
+        return this.currentURL;
+    }
+
+    String getInitialUrl(){
+        return INITIAL_URL;
+    }
+
+    URL getURLObject() {
+        return this.url;
     }
 }
