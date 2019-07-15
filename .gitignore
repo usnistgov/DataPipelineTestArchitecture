@@ -2,5 +2,6 @@ zookeeper/
 kafka/
 mongo-db/
 target/
+.idea/
 
 .DS_Store
