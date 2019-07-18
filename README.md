@@ -7,13 +7,14 @@
 
 ## 3) Download the necessary JARs
 - Download the necessary JAR files here:
-    - https://www.confluent.io/connector/kafka-connect-mqtt/](https://www.confluent.io/connector/kafka-connect-mqtt/ 
-    - [https://www.confluent.io/connector/kafka-connect-mongodb-sink/
+    - https://www.confluent.io/connector/kafka-connect-mqtt/
+    - https://www.confluent.io/connector/kafka-connect-mongodb-sink/
     - https://www.confluent.io/connector/kafka-connect-elasticsearch/
  - Place the downloaded directories in your "jars" directory where you cloned this repository.
 
 ## 4) Install the images via Docker
-- Run `docker-compose up` in a terminal from inside the clone repo's directory. You should be in the same folder where the "docker-compose.yml" file is located.
+- Install docker compose with `sudo apt install docker-compose`.
+- Run `sudo docker-compose up` from inside the clone repo's directory. You should be in the same folder where the "docker-compose.yml" file is located.
 - This will install all of the images for the different tools we are using, and will also create a local connection inside of Docker so they are all able to communicate with one another.
 
 ## 5) Connect the Sources and Sinks
