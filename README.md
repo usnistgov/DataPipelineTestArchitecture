@@ -1,6 +1,7 @@
 # Creating the Data Pipeline Architecture on Ubuntu
 
 ## 1) Clone this repository
+- Create a "jars" directory inside this cloned repository.
 
 ## 2) Install Docker
 - Follow the instructions here: [https://docs.docker.com/install/linux/docker-ce/ubuntu/](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
@@ -10,7 +11,7 @@
     - https://www.confluent.io/connector/kafka-connect-mqtt/
     - https://www.confluent.io/connector/kafka-connect-mongodb-sink/
     - https://www.confluent.io/connector/kafka-connect-elasticsearch/
- - Place the downloaded directories in your "jars" directory where you cloned this repository.
+ - Unzip the files in your "jars" directory where you cloned this repository.
 
 ## 4) Install the images via Docker
 - Install docker compose with `sudo apt install docker-compose`.
