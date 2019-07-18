@@ -1,4 +1,4 @@
-package Kafka;
+package KafkaApp;
 
 
 import org.apache.kafka.clients.consumer.Consumer;
@@ -29,7 +29,7 @@ public class KafkaConnector {
     private KafkaProducer<String, String> producer;
     private final String bootstrapServer ="127.0.0.1:29092";
     private final String groupIdConsumer = "my-first-application";
-    private final String topicConsumer = "connect-custom";
+    private final String topicConsumer = "mqtt-to-kafka";
     private final String groupIdProducer = "json-group";
     private final String topicProducer = "json_topic";
 

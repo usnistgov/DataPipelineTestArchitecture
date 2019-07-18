@@ -1,4 +1,4 @@
-package Kafka;
+package KafkaApp;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
