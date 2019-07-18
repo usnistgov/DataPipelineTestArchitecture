@@ -2,8 +2,9 @@ zookeeper/
 kafka/
 mongo-db/
 target/
-.idea/
+jars/
 
+.idea/
 .DS_Store
 
 pom.xml
