@@ -29,8 +29,8 @@
 - If you already use Java or have it set up, you can skip this step.
 - Using Ubuntu you should already have Java installed, check with `java -version`, and check you have the JDK with `javac -version`. If you don't have them installed then you can download them with `sudo apt install default-jre` and `sudo apt-get install openjdk-11-jdk`.
 - Download IntelliJ using either the Ubuntu Software Center or with `sudo snap install intellij-idea-community --classic`.
-- Load IntelliJ. Select import project and import the "DataPipelineTestArchitecture" directory. Follow the steps and if you need to setup your SDK it should be in "/usr/lib/jvm/java-11-openjdk-amd64". If it is not, use `whereis java` in the terminal to find where it is located.
-- Upon loading into IntelliJ you should get an error regarding "pom.xml". Click the error and click to import the dependencies. If you don't see the error go to "Settings -> Maven -> Importing" and check the box that says "Import Maven projects automatically".
+- Load IntelliJ. Select import project and import the "DataPipelineTestArchitecture" directory. Follow the steps, making sure to import from External using Maven, and if you need to setup your SDK it should be in "/usr/lib/jvm/java-11-openjdk-amd64". If it is not, use `whereis java` in the terminal to find where it is located.
+- Upon loading into IntelliJ, go to "Settings -> Maven -> Importing" and check the box that says "Import Maven projects automatically".
 - Give IntelliJ a couple of minutes to install all of the dependencies.
 
 ## 7) Test that everything is working
