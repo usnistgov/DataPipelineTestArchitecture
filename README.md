@@ -1,10 +1,11 @@
 # Creating the Data Pipeline Architecture on Ubuntu
 
 ## 1) Clone this repository
+- Grab the repository at https://github.com/usnistgov/DataPipelineTestArchitecture.git
 - Create a "jars" directory inside this cloned repository.
 
 ## 2) Install Docker
-- Follow the instructions here: [https://docs.docker.com/install/linux/docker-ce/ubuntu/](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+- Follow the instructions here: https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 ## 3) Download the necessary JARs
 - Download the necessary JAR files here:
