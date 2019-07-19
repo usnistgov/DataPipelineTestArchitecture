@@ -43,7 +43,7 @@
   - `sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-console-consumer --bootstrap-server kafka:9092 --topic mqtt-to-kafka --group test-group`
   - `sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-console-consumer --bootstrap-server kafka:9092 --topic json_topic --group test-group`
 
-## 8) Test that everything is working
+## 9) Test that everything is working
 - There is a test program and XML file available, named "PipelineTest.java". Go ahead and run the program. If everything is working correctly, the program should grab the data from the XML file, produce it to MQTT who sends it to Kafka, then both MongoDB and Elasticsearch should consume that data as JSON.
 - If everything worked properly, you should see the data from the test file being consumed in both terminal windows. `mqtt-to-kafka` will be in XML format and `json_topic` will be in JSON.
 - As long as that worked properly, then it should be in both MongoDB and Elasticsearch. We can look to be sure.
