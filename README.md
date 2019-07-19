@@ -23,7 +23,7 @@
   - `curl -d @connect-mqtt-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors` 
   - `curl -d @connect-mongodb-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
   - `curl -d @connect-elasticsearch-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
-- Now our sources and sinks should all be connected, and our data pipeline should be up and running.
+- Now our sources and sinks should all be connected, and our data pipeline should be up and running. This can be checked by typing `curl localhost:8083/connectors/<Your source or sink name>/status | jq`(you may need to install jq with `sudo apt install jq` - it's just a JSON processor that prints JSON text out in a more readable, or "pretty" format). The name of the source or sink is located in the json file, labeled "name". So, for example, to check the status of the MongoDB sink you'd enter `curl localhost:8083/connectors/mongodb-sink/status | jq`.
 
 ## 6) Setup Java
 - If you already use Java or have it set up, you can skip this step.
