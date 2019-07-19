@@ -1,10 +1,10 @@
 #! /bin/bash
 
-curl -d @connect-mqtt-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+curl -d @connectors/connect-mqtt-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 sleep 1.5
-curl -d @connect-mongodb-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+curl -d @connectors/connect-mongodb-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 sleep 1.5
-curl -d @connect-elasticsearch-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+curl -d @connectors/connect-elasticsearch-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
 sleep 1.5
 sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-topics --zookeeper zookeeper:2181 --topic mqtt-to-kafka --create --partitions 3 --replication-factor 1 exec bash
 sleep 6
