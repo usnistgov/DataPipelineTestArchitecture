@@ -25,10 +25,7 @@
   - `sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-topics --zookeeper zookeeper:2181 --topic json_topic --create --partitions 3 --replication-factor 1`
 
 ## 6) Connect the Sources and Sinks
-- We need to connect our MQTT source to Kafka,Kafka to our MongoDB sink, and Kafka to our Elasticsearch sink. We do that by using the "connect" files. Enter the following commands:
-  - `curl -d @connect-mqtt-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors` 
-  - `curl -d @connect-mongodb-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
-  - `curl -d @connect-elasticsearch-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
+- We need to connect our MQTT source to Kafka,Kafka to our MongoDB sink, and Kafka to our Elasticsearch sink. We do that by using the "connect" files. There's a bash script to set them all up, use `chmod u+x connectors.sh` then `./connectors.sh`.
 - Now our sources and sinks should all be connected, and our data pipeline should be up and running. This can be checked by typing `curl localhost:8083/connectors/<Your source or sink name>/status | jq`(you may need to install jq with `sudo apt install jq` - it's just a JSON processor that prints JSON text out in a more readable, or "pretty" format). The name of the source or sink is located in the json file, labeled "name". So, for example, to check the status of the MongoDB sink you'd enter `curl localhost:8083/connectors/mongodb-sink/status | jq`.
 
 ## 7) Setup Java
@@ -50,3 +47,9 @@
 - As long as that worked properly, then it should be in both MongoDB and Elasticsearch. We can look to be sure.
   - Open a new terminal and enter `sudo docker exec -it mongo mongo-db`. It will open the CLI for MongoDB. With `show dbs` we should see "test" as an option. Go in that database with `use test` and then `show collections` should give us "MyCollection". Finally, with `db.MyCollection.find()` we should see our test data populated in MongoDB. You can exit out of MongoDB with `exit`.
   - In the same terminal, go ahead and enter `curl localhost:9200/json_topic_index/_search?pretty`. This should show our test data now populated in Elasticsearch.
+
+
+OLD STUFF:
+  - `curl -d @connect-mqtt-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors` 
+  - `curl -d @connect-mongodb-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
+  - `curl -d @connect-elasticsearch-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
