@@ -28,7 +28,7 @@ public class KafkaConnector {
     private KafkaConsumer<String, String> consumer;
     private KafkaProducer<String, String> producer;
     private final String bootstrapServer ="127.0.0.1:29092";
-    private final String groupIdConsumer = "my-first-application";
+    private final String groupIdConsumer = "test-group";
     private final String topicConsumer = "mqtt-to-kafka";
     private final String groupIdProducer = "json-group";
     private final String topicProducer = "json_topic";

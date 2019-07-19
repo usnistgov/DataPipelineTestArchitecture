@@ -67,7 +67,7 @@ services:
       CONNECT_PLUGIN_PATH: '/usr/share/java,/etc/kafka-connect/jars'
       CONNECT_CONFLUENT_TOPIC_REPLICATION_FACTOR: 1
     volumes:
-      - /tmp/custom/jars:/etc/kafka-connect/jars
+      - ./jars:/etc/kafka-connect/jars
     depends_on:
       - zookeeper
       - kafka
@@ -110,9 +110,10 @@ services:
         soft: -1
         hard: -1
     volumes:
-            - /usr/share/elasticsearch/data
+            - ./elasticsearch/data
     ports:
       - "9200:9200"
+      - "9300:9300"
   kibana:
     image: 'docker.elastic.co/kibana/kibana:6.3.2'
     container_name: kibana
