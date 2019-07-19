@@ -5,7 +5,7 @@
 - Create a "jars" directory inside this cloned repository.
 
 ## 2) Install Docker
-- Follow the instructions here: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+- Follow the instructions here: https://docs.docker.com/install/linux/docker-ce/ubuntu/ (Setting this up with the "Install using the repository" is the easiest, and suggested way to do this).
 
 ## 3) Download the necessary JARs
 - Download the necessary JAR files here:
