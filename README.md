@@ -11,7 +11,7 @@
 - Download the necessary JAR files here:
     - https://www.confluent.io/connector/kafka-connect-mqtt/
     - https://www.confluent.io/connector/kafka-connect-mongodb-sink/
-    - https://www.confluent.io/connector/kafka-connect-elasticsearch/ (Note: For Elasticsearch to work, the `vm.max_map_count` kernel settings need to be set to at least 262144 for use. You can do this with `sudo systcl -w vm.max_map_count=262144`).
+    - https://www.confluent.io/connector/kafka-connect-elasticsearch/ (Note: For Elasticsearch to work, the `vm.max_map_count` kernel settings need to be set to at least 262144 for use. You can do this with `sudo sysctl -w vm.max_map_count=262144`).
  - Unzip the files in your "jars" directory where you cloned this repository.
 
 ## 4) Install the images via Docker
