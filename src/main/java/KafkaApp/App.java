@@ -12,10 +12,19 @@ import org.json.XML;
 import java.time.Duration;
 
 
+/*
+ * Driver application that takes data from the XML topic, transforms it to
+ * JSON and publishes the JSON string into a JSON topic.
+ */
 public class App {
 
     public static void main(String[] args) {
 
+    	/*
+    	 * Creates a new KafkaConnector, and uses that to make a new consumer and producer.
+    	 * The consumer gets the data from the XML topic and the producer sends data to the
+    	 * JSON topic.
+    	 */
         KafkaConnector connector = new KafkaConnector();
         connector.consume();
         KafkaConsumer<String, String> consumer = connector.getConsumer();
@@ -36,8 +45,6 @@ public class App {
                 String jStr = obj.toString();
                 ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>(connector.getTopicProducer(), jStr);
                 producer.send(producerRecord);
-                //logger.info("Key: " + record.key() + ", Value: " + record.value());
-                //logger.info("Partition: " + record.partition() + ", Offset: " + record.offset());
             }
             producer.flush();
         }
