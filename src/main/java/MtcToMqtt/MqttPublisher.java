@@ -21,7 +21,7 @@ class MqttPublisher {
      */
     private static final String topic = "test-topic";
     private static final String broker = "tcp://localhost:1883";
-    private static final String clientId = "mqtt-to-kafka";
+    private static final String clientId = "mqtt-1";
     private static final int qos = 2;
     private MqttClient client;
 
