@@ -14,10 +14,16 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 
+/*
+ * Creates an MQTT client that can retrieve data and publish it to a topic.
+ */
 class MqttPublisher {
 
     /*
      * Set your topic, broker and clientId accordingly.
+     *      topic : The topic you want to publish to in MQTT
+     *      broker : The address for MQTT
+     *      clientId : This client's unique client id.
      */
     private static final String topic = "test-topic";
     private static final String broker = "tcp://localhost:1883";
@@ -59,9 +65,16 @@ class MqttPublisher {
         }
     }
 
+    /*
+     * Transforms the message to a String to be used for publishing.
+     */
     String createMessage (Document doc) throws Exception {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
+        /*
+         * Allows us to ignore the XML header declaration that comes with the XML page
+         * but is not part of the MTConnect standard.
+         */
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(doc), new StreamResult(writer));

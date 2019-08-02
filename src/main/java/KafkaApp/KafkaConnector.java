@@ -18,9 +18,19 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Properties;
 
+/*
+ * Creates both the Kafka consumer and Kafka producer used to consume from XML topic and
+ * produce to JSON topic. Sets all of the properties for both of them, and can turn the
+ * consumer on.
+ */
 public class KafkaConnector {
     /*
      * Set your server, groupId and topic information accordingly.
+     *      bootstrapServer : The address/port for Kafka
+     *      groupIdConsumer : The ID of the consumer group.
+     *      topicConsumer : The XML topic that MQTT is writing to in Kafka(located in the MQTT connector file).
+     *      groupIdProducer : The ID of the producer group.
+     *      topicProducer : The JSON topic that Kafka writes the new JSON string to.
      */
     private final Logger logger = LoggerFactory.getLogger(Consumer.class.getName());
     private Properties consumerProperties;
@@ -33,6 +43,19 @@ public class KafkaConnector {
     private final String groupIdProducer = "json-group";
     private final String topicProducer = "json_topic";
 
+    /*
+     * Set all the properties for the producer and consumer.
+            Consumer:
+                BOOTSTRAP_SERVERS_CONFIG : The Kafka server.
+                KEY_DESERIALIZER_CLASS_CONFIG : Deserializes the incoming message's key from bytes into its proper format.
+                VALUE_DESERIALIZER_CLASS_CONFIG : Deserializes the incoming message's value from bytes into its proper format.
+                GROUP_ID_CONFIG : Sets the consumer's group ID.
+                AUTO_OFFSET_RESET_CONFIG : Sets where our offset is located on the topic.
+            Producer:
+                BOOTSTRAP_SERVERS_CONFIG : The Kafka server.
+                KEY_DESERIALIZER_CLASS_CONFIG : Serializes the incoming message's key into bytes.
+                VALUE_DESERIALIZER_CLASS_CONFIG : Serializes the incoming message's value into bytes.
+     */
     KafkaConnector() {
         this.consumerProperties = new Properties();
         this.consumerProperties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);

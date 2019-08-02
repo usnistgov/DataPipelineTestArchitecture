@@ -14,6 +14,11 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 
+/*
+ * Deprecated. Keeping here for now in order to eventually convert some of this data into the
+ * KafkaConnector and App class. Uses a CountDownLatch to allow safe exiting of the program.
+ */
+
 class KafkaRunnable implements Runnable {
 
     private CountDownLatch latch;

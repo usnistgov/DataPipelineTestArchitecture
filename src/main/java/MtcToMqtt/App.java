@@ -10,6 +10,11 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.Scanner;
 
+/*
+ * This gets all of the data from the Mazak Testbed and publishes it into MQTT. It establishes
+ * a connection to the website, goes through all needed sequence numbers via GET requests, and
+ * takes the XML data, publishing it to MQTT.
+ */
 public class App {
 
     public static void main(String[] args) throws Exception {
@@ -147,20 +152,6 @@ public class App {
             e.printStackTrace();
         }
     }
-
-    /*
-     * Creates the data to send through the MqttPublisher with a Transformer, then writes that XML
-     * data to a String and publish it to Mosquitto.
-     */
-//    private static void publishDriver(Document doc, MqttPublisher publisher) throws Exception {
-//        TransformerFactory tf = TransformerFactory.newInstance();
-//        Transformer transformer = tf.newTransformer();
-//        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-//        StringWriter writer = new StringWriter();
-//        transformer.transform(new DOMSource(doc), new StreamResult(writer));
-//        String xml = writer.getBuffer().toString();
-//        publisher.publishMessage(xml);
-//    }
 
     /*
      * Saves the last sequence number once we have collected all the documents.

@@ -8,6 +8,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/*
+ * Creates the connection to the Mazak test bed, retrieves the XML data and turns it into
+ * DocumentBuilder object.
+ */
 final class DocumentConnector {
 
     private static final String INITIAL_URL = "http://mtconnect.mazakcorp.com:5609/current";

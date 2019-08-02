@@ -6,6 +6,9 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+/*
+ * Subscribes to an MQTT topic. NOTE: Untested as of 08/02/2019.
+ */
 public class MqttSubscriber {
 
     private MqttClient client;
