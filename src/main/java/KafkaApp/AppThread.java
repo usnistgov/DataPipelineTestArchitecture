@@ -20,7 +20,7 @@ public class AppThread {
     private void run() {
         Logger logger = LoggerFactory.getLogger(AppThread.class.getName());
         KafkaConnector connector = new KafkaConnector();
-        connector.consume();
+        //connector.consume();
         KafkaConsumer<String, String> consumer = connector.getConsumer();
         KafkaProducer<String, String> producer = connector.getProducer();
 
