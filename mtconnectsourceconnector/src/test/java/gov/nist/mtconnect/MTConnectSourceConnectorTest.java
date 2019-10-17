@@ -3,7 +3,6 @@ package gov.nist.mtconnect;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

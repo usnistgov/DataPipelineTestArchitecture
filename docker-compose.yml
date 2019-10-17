@@ -1,14 +1,6 @@
 version: '3.3'
  
 services:
-  mosquitto:
-    image: eclipse-mosquitto:1.5.5
-    hostname: mosquitto
-    container_name: mosquitto
-    expose:
-      - "1883"
-    ports:
-      - "1883:1883"
   zookeeper:
     image: zookeeper:3.4.9
     restart: unless-stopped
@@ -96,29 +88,3 @@ services:
       PORT: 3000
     expose:
       - "3000"
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
-    container_name: elasticsearch
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-            - ./elasticsearch/data
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-  kibana:
-    image: 'docker.elastic.co/kibana/kibana:6.3.2'
-    container_name: kibana
-    environment:
-      SERVER_NAME: kibana.local
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-    ports:
-      - '5601:5601'

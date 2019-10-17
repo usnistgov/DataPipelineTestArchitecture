@@ -1,8 +1,6 @@
 zookeeper/
 kafka/
 mongo-db/
-target/
-jars/
 elasticsearch/
 
 .idea/
