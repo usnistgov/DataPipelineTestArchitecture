@@ -2,13 +2,15 @@ package gov.nist.mtconnect;
 
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
+
+
+
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -17,28 +19,27 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Collections;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.*;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 
 public class MTConnectSourceTask extends SourceTask {
-  //static final Logger log = LoggerFactory.getLogger(MTConnectSourceTask.class);
+  static final Logger log = LoggerFactory.getLogger(MTConnectSourceTask.class);
 
-  private static final String DEVICE_URL = "device_url";
-  private static final String LAST_SEQUENCE = "last_sequence";
-  private static final String TOPIC_CONFIG = "topic_config";
-  private String deviceURL = "http://mtconnect.mazakcorp.com:5609"; // should be input from config
-  private String initialUrl = this.deviceURL+"/current";
-  private String sequenceUrl = this.deviceURL+"/sample?from=";
-  private String topic = deviceURL+"XML";
-  private InputStream responseStream;
-  private Document xmlResponseDocument;
+  public static final String AGENT_URL = "agent_url";
+  public static final String DEVICE_PATH = "device_path";
+  public static final String NEXT_SEQUENCE = "next_sequence";
+  public static final String TOPIC_CONFIG = "topic_config";
+
+  private String agentURL; // should be input from config
+  private String devicePath;
+  private String topic;
   private Integer nextSequence = -1;
-  private Integer lastSequence = -1;
 
   @Override
   public String version() {
@@ -48,133 +49,157 @@ public class MTConnectSourceTask extends SourceTask {
   @Override
   public void start(Map<String, String> props) {
     //TODO: Do things here that are required to start your task. This could be open a connection to a database, etc.
-      this.setupTaskConfig(props);
+      agentURL = props.get(AGENT_URL);
+      devicePath = props.get(DEVICE_PATH);
+      //nextSequence = Integer.parseInt(props.get(NEXT_SEQUENCE));
+      topic = props.get(TOPIC_CONFIG);
 
-      //log.debug("Trying to get persistedMap.");
-      /*
+      log.debug("Trying to get persistedMap.");
+
       Map<String, Object> persistedMap = null;
       if (context != null && context.offsetStorageReader() != null) {
           // Lookup the offset by the device url (the key is stored as a singletonMap)
-          persistedMap = context.offsetStorageReader().offset(Collections.singletonMap(DEVICE_URL, deviceURL));
+          persistedMap = context.offsetStorageReader().offset(Collections.singletonMap(AGENT_URL, agentURL));
       }
       //log.info("The persistedMap is {}", persistedMap);
       if (persistedMap != null) {
-          this.lastSequence = (Integer) persistedMap.get(LAST_SEQUENCE);
+          this.nextSequence = (Integer) persistedMap.get(NEXT_SEQUENCE);
       }
-      */
+
   }
 
   @Override
   public List<SourceRecord> poll() throws InterruptedException {
-        HttpURLConnection urlConnection = null;
-        URL url = null;
-        // Query the last known NextSequence Number
-        // if nextSequence == -1, get Current
-      try {
-          if (this.nextSequence == -1) {
-              url = new URL(this.initialUrl);
-          } else { //else append nextSequence to http
-              url = new URL(this.sequenceUrl + nextSequence);
-          }
+      Document xmlResponseDocument = this.getXMLResponseDocument();
+      List<SourceRecord> records = Collections.emptyList();
 
-          urlConnection = (HttpURLConnection) url.openConnection();
-          urlConnection.setRequestMethod("GET");
-          urlConnection.setRequestProperty("Accept", "application/xml");
-          int responseCode = urlConnection.getResponseCode();
-          if (responseCode == HttpURLConnection.HTTP_OK){
-              responseStream = urlConnection.getInputStream();
-          }
-      }
-        catch (IOException e) {
-          e.printStackTrace();
-      }
-
-      xmlResponseDocument = this.parseStream(responseStream);
-      Element root = xmlResponseDocument.getDocumentElement();
-      String xmlResponseDocumentType = root.getNodeName();
-      System.out.println("Response Document Type: " + xmlResponseDocumentType);
-
-    // If Response is MTConnectStreams (responseDocument.firstNode.nodeType == "MTConnectStreams")
-      if (xmlResponseDocumentType.equals("MTConnectStreams")){
-          System.out.println("Getting sequence numbers");
-          int[] sequenceNumbers = getCurrentSequenceNumbers(xmlResponseDocument);
-          this.lastSequence = sequenceNumbers[1];
-          System.out.println("Last Sequence Number: " + this.lastSequence);
-          System.out.println("XML IN String format is: \n" + this.DOMtoStringWriter(xmlResponseDocument).toString());
-          return getReponseDocumentAsSourceRecords(xmlResponseDocument);
-      }
-        // Put response document into SourceRecord
-        // Store the Next Sequence Number
-
-    // Else If Response is MTConnect Error
-      else if (xmlResponseDocumentType.equals("MTConnectError")){
-          this.lastSequence = -1;
+      if (xmlResponseDocument != null){
+          String xmlResponseDocumentType = xmlResponseDocument.getDocumentElement().getNodeName();
           System.out.println("Response Document Type: " + xmlResponseDocumentType);
-          return getReponseDocumentAsSourceRecords(null);
+          if (xmlResponseDocumentType.equals("MTConnectStreams")){
+              // Put response document into SourceRecord
+              // Store the Next Sequence Number
+              this.nextSequence = getNextSequenceNumber(xmlResponseDocument);
+              //System.out.println("Next Sequence Number: " + this.nextSequence);
+              //System.out.println("XML IN String format is: \n" + this.DOMtoStringWriter(xmlResponseDocument).toString());
+              records = this.getResponseDocumentAsSourceRecords(xmlResponseDocument);
+          }
+          else if (xmlResponseDocumentType.equals("MTConnectError")){
+              // Else If Response is MTConnect Error
+              this.nextSequence = -1;
+              System.out.println("Response Document Type: " + xmlResponseDocumentType);
+          }
       }
-    // Else (didn't get an MTConnect response at all)
       else {
-          this.lastSequence = -1;
-          System.out.println("No Response Document");
-          return Collections.emptyList();
+          // Else (didn't get an MTConnect response at all)
+          this.nextSequence = -1;
+          System.out.println("No Valid Response Document");
       }
+
+      return records;
   }
 
-  @Override
+    @Override
   public void stop() {
     //TODO: Do whatever is required to stop your task.
   }
 
-  private List<SourceRecord> getReponseDocumentAsSourceRecords(Document xmlResponseDocument) {
+
+    private Document getXMLResponseDocument() {
+        HttpURLConnection urlConnection;
+        String urlString;
+        URL url;
+        InputStream responseStream = null;
+        // Query the last known NextSequence Number
+        // if nextSequence == -1, get Current
+        try {
+            if (this.nextSequence == -1) {
+                urlString = this.agentURL + "/current?";
+            }
+            else if(this.nextSequence != -1){
+                urlString = this.agentURL +"/sample?from=" + this.nextSequence;
+            }
+            else { //else append nextSequence to http
+                urlString = this.agentURL + "/current?";
+            }
+
+            if (this.devicePath != null){
+                urlString += "&"+this.devicePath;
+            }
+            System.out.println(urlString);
+            url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Accept", "application/xml");
+
+            //Check the url connection
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                //If okay, get inputstream from connection
+                responseStream = urlConnection.getInputStream();
+                // parse stream if it's not null
+                if (responseStream != null){return this.parseStream(responseStream);}
+                else {
+                    System.out.println("Not Returning MTConnect (HTTP Okay though?)");
+                    return null;
+                }
+            } else {
+                System.out.println("Not Returning MTConnect (HTTP Connection Issue)");
+                return null;
+            }
+        } catch (MalformedURLException | ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace(); //url.Connection.getResponseCode
+        }
+
+        return null;
+    }
+
+    private List<SourceRecord> getResponseDocumentAsSourceRecords(Document xmlResponseDocument) {
       ArrayList<SourceRecord> records = new ArrayList<>();
-      Map<String, String> sourcePartition = Collections.singletonMap(DEVICE_URL, deviceURL);
-      Map<String, Integer> sourceOffset = Collections.singletonMap(LAST_SEQUENCE, lastSequence);
+      Map<String, String> sourcePartition = new HashMap<String, String>();
+        sourcePartition.put(AGENT_URL, this.agentURL);
+        sourcePartition.put(DEVICE_PATH, this.devicePath);
+      Map<String, Integer> sourceOffset = Collections.singletonMap(NEXT_SEQUENCE, nextSequence);
       String value = this.DOMtoStringWriter(xmlResponseDocument).toString();
       records.add(new SourceRecord(sourcePartition, sourceOffset, topic, null, value));
 
       return records;
     }
-    private void setupTaskConfig(Map<String, String> props) {
-        this.deviceURL = props.get(DEVICE_URL);
-        this.nextSequence = Integer.parseInt(props.get(LAST_SEQUENCE));
-        this.topic = props.get(TOPIC_CONFIG);
 
-    }
-    private static int[] getCurrentSequenceNumbers(Document doc) {
-        int[] sequenceNums = new int[2];
+    private static int getNextSequenceNumber(Document doc) {
         NodeList nodes = doc.getElementsByTagName("Header");
         Node node = nodes.item(0);
         Element element = (Element) node;
 
-        sequenceNums[0] = Integer.parseInt(element.getAttribute("firstSequence"));
-        sequenceNums[1] = Integer.parseInt(element.getAttribute("lastSequence"));
-        return sequenceNums;
+        return Integer.parseInt(element.getAttribute("nextSequence"));
     }
 
     private Document parseStream(InputStream responseStream) {
-        DocumentBuilderFactory domFact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
 
         try {
-            builder = domFact.newDocumentBuilder();
-            xmlResponseDocument = builder.parse(responseStream);
+            Document xmlResponseDocument = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder()
+                    .parse(responseStream);
+            return xmlResponseDocument;
+
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
 
-        return xmlResponseDocument;
+        return null;
     }
 
     private StringWriter DOMtoStringWriter(Document xmlResponseDocument){
-        DOMSource domSource;
         StringWriter writer = new StringWriter();
-        StreamResult result = new StreamResult(writer);
-
         try {
-            domSource = new DOMSource(xmlResponseDocument);
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
-            transformer.transform(domSource, result);
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(new DOMSource(xmlResponseDocument), new StreamResult(writer));
         }
         catch( TransformerException e){
             e.printStackTrace();
