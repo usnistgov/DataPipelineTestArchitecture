@@ -3,7 +3,7 @@
     "config": {
         "connector.class": "at.grahsl.kafka.connect.mongodb.MongoDbSinkConnector",
         "tasks.max": 1,
-        "topics": "json_topic",
+        "topics": "M80104K162N_XML",
         "mongodb.connection.uri": "mongodb://mongo-db/test?retryWrites=true",
         "mongodb.collection": "MyCollection",
         "key.converter": "org.apache.kafka.connect.json.JsonConverter",
