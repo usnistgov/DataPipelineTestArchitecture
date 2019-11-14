@@ -91,15 +91,15 @@ public class MTConnectSourceConnectorTest {
       System.out.println(sourceRecord.toString());
     }
 
-    /*
+
     while(true){
       for (int i =0; i<=1; i++) {
         List<SourceRecord> sourceRecord = taskList.get(i).poll();
         System.out.println(sourceRecord.toString());
       }
-      sleep(1000);
+      //sleep(1000);
     }
-    */
+
 
   }
 

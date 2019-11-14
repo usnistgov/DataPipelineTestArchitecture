@@ -3,7 +3,7 @@ kafka/
 mongo-db/
 elasticsearch/
 
-.idea/
+mtconnectToMQTT/.idea/
 .DS_Store
 
 pom.xml
