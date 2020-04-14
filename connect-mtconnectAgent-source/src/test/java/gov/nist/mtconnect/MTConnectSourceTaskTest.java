@@ -3,10 +3,6 @@ package gov.nist.mtconnect;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +18,7 @@ public class MTConnectSourceTaskTest {
         testDeviceSpecificURL();
     }
 
+    @Test
     public void basicTest() {
         MTConnectSourceTask sourceTask = new MTConnectSourceTask();
         Map<String, String> properties = new HashMap<String, String>();
@@ -33,6 +30,7 @@ public class MTConnectSourceTaskTest {
         try {
             sourceTask.poll();
             sleep(1000);
+            sourceTask.poll();
             sourceTask.poll();
         } catch (InterruptedException e) {
             e.printStackTrace();
