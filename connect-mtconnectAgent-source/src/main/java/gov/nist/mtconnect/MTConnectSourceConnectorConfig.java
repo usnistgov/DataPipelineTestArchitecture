@@ -1,5 +1,6 @@
 package gov.nist.mtconnect;
 
+import com.sun.org.apache.regexp.internal.RE;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigDef.Type;
@@ -21,11 +22,15 @@ class MTConnectSourceConnectorConfig extends AbstractConfig {
   public static final String TOPIC_CONFIG = MTConnectSourceTask.TOPIC_CONFIG;
   private static final String TOPIC_DOC = "This is the topic that the data will be published to.";
 
+  public static final String REQUEST_INTERVAL = MTConnectSourceTask.REQUEST_INTERVAL;
+  private static final String REQUEST_INTERVAL_DOC = "This is the minimum amount of time between requests (in millis)";
+
   public static ConfigDef conf() {
     return new ConfigDef()
             .define(AGENT_URL_CONFIG, Type.STRING, Importance.HIGH, AGENT_URL_DOC)
             .define(DEVICE_PATH_CONFIG, Type.STRING, Importance.LOW, DEVICE_PATH_DOC)
-            .define(TOPIC_CONFIG, Type.STRING, Importance.HIGH, TOPIC_DOC);
+            .define(TOPIC_CONFIG, Type.STRING, Importance.HIGH, TOPIC_DOC)
+            .define(REQUEST_INTERVAL,Type.STRING, "0", Importance.LOW, REQUEST_INTERVAL_DOC);
   }
 
   public MTConnectSourceConnectorConfig(ConfigDef config, Map<String, String> parsedConfig) {

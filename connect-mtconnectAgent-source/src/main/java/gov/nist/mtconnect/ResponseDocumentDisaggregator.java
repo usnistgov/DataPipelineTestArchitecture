@@ -12,28 +12,24 @@ import java.util.HashMap;
 
 public class ResponseDocumentDisaggregator {
 
-    public HashMap<String,Document> returnDataItem(Document input) {
+    public HashMap<String,Document> returnDataItem(Document input) throws XPathExpressionException, ParserConfigurationException {
         HashMap<String,Document> documentHashMap= new HashMap<>();
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-        try {
-            XPathExpression expr = xPath.compile("//*[parent::Samples|parent::Events|parent::Condition]");
-            Object result = expr.evaluate(input, XPathConstants.NODESET);
-            NodeList nodes = (NodeList) result;
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Element nodeAsElement = (Element) nodes.item(i);
-                String dataItemId = nodeAsElement.getAttribute("dataItemId");
-                Document newXmlDocument = dbf.newDocumentBuilder().newDocument();
-                Node imported = newXmlDocument.importNode(nodes.item(i), true);
-                newXmlDocument.appendChild(imported);
-                documentHashMap.put(dataItemId, newXmlDocument);
-            }
+        XPathExpression expr = xPath.compile("//*[parent::Samples|parent::Events|parent::Condition]");
+        Object result = expr.evaluate(input, XPathConstants.NODESET);
+        NodeList nodes = (NodeList) result;
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element nodeAsElement = (Element) nodes.item(i);
+            String dataItemId = nodeAsElement.getAttribute("dataItemId");
+            Document newXmlDocument = dbf.newDocumentBuilder().newDocument();
+            Node imported = newXmlDocument.importNode(nodes.item(i), true);
+            newXmlDocument.appendChild(imported);
+            documentHashMap.put(dataItemId, newXmlDocument);
         }
-        catch(XPathExpressionException | ParserConfigurationException e){
-            e.printStackTrace();
-        }
+
         return documentHashMap;
     }
 
@@ -74,6 +70,7 @@ public class ResponseDocumentDisaggregator {
             }
             documentHashMap.put(dataItemId, newXmlDocument);
         }
+
         return documentHashMap;
     }
 }

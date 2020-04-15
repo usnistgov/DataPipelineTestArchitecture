@@ -1,5 +1,6 @@
 package gov.nist.mtconnect;
 
+import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -54,7 +55,14 @@ public class TCPSourceConnectorTest {
 
     TCPSourceTask task = new TCPSourceTask();
     task.start(configs.get(0));
-    task.poll();
+    List<SourceRecord> records = task.poll();
     task.stop();
+
+    for (int i =0 ; i < records.size(); i++){
+      System.out.println(records.get(i));
+
+    }
+
+
   }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="4" failures="0" name="gov.nist.mtconnect.MTConnectSourceConnectorTest" time="0.621" errors="0" skipped="0">
+<testsuite tests="1" failures="0" name="gov.nist.mtconnect.KStreamsDisaggregatorTest" time="0.002" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64"/>
@@ -63,8 +63,5 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="gov.nist.mtconnect.MTConnectSourceConnectorTest" name="testWithTaskClass" time="0.621"/>
-  <testcase classname="gov.nist.mtconnect.MTConnectSourceConnectorTest" name="testNullPath" time="0"/>
-  <testcase classname="gov.nist.mtconnect.MTConnectSourceConnectorTest" name="test" time="0"/>
-  <testcase classname="gov.nist.mtconnect.MTConnectSourceConnectorTest" name="testMultipleURLs" time="0"/>
+  <testcase classname="gov.nist.mtconnect.KStreamsDisaggregatorTest" name="test" time="0.002"/>
 </testsuite>

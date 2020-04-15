@@ -12,12 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MTConnectSourceConnector extends SourceConnector {
-  private static Logger log = LoggerFactory.getLogger(MTConnectSourceConnector.class);
+  private static final Logger log = LoggerFactory.getLogger(MTConnectSourceConnector.class);
   private MTConnectSourceConnectorConfig configProperties;
 
   private static final String AGENT_URL = MTConnectSourceTask.AGENT_URL;
   private static final String DEVICE_PATH = MTConnectSourceTask.DEVICE_PATH;
   private static final String TOPIC_CONFIG = MTConnectSourceTask.TOPIC_CONFIG;
+  private static final String REQUEST_INTERVAL = MTConnectSourceTask.REQUEST_INTERVAL;
 
   @Override
   public String version() {
@@ -53,16 +54,12 @@ public class MTConnectSourceConnector extends SourceConnector {
 
     for (int i=0; i < splitAgentURLs.length; i++) {
       Map<String, String> taskConfig = new HashMap<>();
-      taskConfig.put(AGENT_URL, splitAgentURLs[i]);
+      taskConfig.put(MTConnectSourceConnector.AGENT_URL, splitAgentURLs[i]);
       taskConfig.put(DEVICE_PATH, splitDevicePaths[i]);
       taskConfig.put(TOPIC_CONFIG, splitTopics[i]);
+      taskConfig.put(REQUEST_INTERVAL, configProperties.getString(REQUEST_INTERVAL));
       configs.add(taskConfig);
     }
-    /*
-    System.out.println("Configurations:");
-    for( int i = 0; i < configs.size(); i++){
-        System.out.println(configs.get(i).toString());
-    }*/
 
     return configs;
   }

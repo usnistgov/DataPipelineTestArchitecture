@@ -14,6 +14,7 @@ public class MTConnectSourceConnectorTest {
   public static final String AGENT_URL = MTConnectSourceTask.AGENT_URL;
   public static final String DEVICE_PATH = MTConnectSourceTask.DEVICE_PATH;
   public static final String TOPIC_CONFIG = MTConnectSourceTask.TOPIC_CONFIG;
+  public static final String REQUEST_INTERVAL = MTConnectSourceTask.REQUEST_INTERVAL;
 
   public static final String TEST_AGENT_URL = "http://mtconnect.mazakcorp.com:5612";
   public static final String TEST_AGENT_MULTIPLE_URLS = "http://mtconnect.mazakcorp.com:5612;http://mtconnect.mazakcorp.com:5609";
@@ -21,6 +22,7 @@ public class MTConnectSourceConnectorTest {
   public static final String TEST_DEVICE_MULTIPLE_PATHS = "path=//Device[@name=\"Mazak\"];path=//Device[@name=\"MFMS10-MC1\"]";
   public static final String TEST_TOPIC_CONFIG = "M80104K162N_XML";
   public static final String TEST_MULTIPLE_TOPICS = "M80104K162N_XML; MAZAK-M77KP290337_XML";
+  public static final String TEST_REQUEST_INTERVAL = "1000";
 
 
   @Test
@@ -29,6 +31,7 @@ public class MTConnectSourceConnectorTest {
     parsedConfigs.put(AGENT_URL, TEST_AGENT_URL);
     parsedConfigs.put(DEVICE_PATH, TEST_DEVICE_PATH);
     parsedConfigs.put(TOPIC_CONFIG, TEST_TOPIC_CONFIG);
+    parsedConfigs.put(REQUEST_INTERVAL, TEST_REQUEST_INTERVAL);
 
     MTConnectSourceConnector connector = new MTConnectSourceConnector();
     connector.start(parsedConfigs);
@@ -68,6 +71,7 @@ public class MTConnectSourceConnectorTest {
     parsedConfigs.put(AGENT_URL, TEST_AGENT_MULTIPLE_URLS);
     parsedConfigs.put(DEVICE_PATH, TEST_DEVICE_MULTIPLE_PATHS);
     parsedConfigs.put(TOPIC_CONFIG, TEST_MULTIPLE_TOPICS);
+    parsedConfigs.put(REQUEST_INTERVAL, TEST_REQUEST_INTERVAL);
 
     MTConnectSourceConnector connector = new MTConnectSourceConnector();
     connector.start(parsedConfigs);
@@ -78,24 +82,14 @@ public class MTConnectSourceConnectorTest {
 
     for (int i =0; i<=1; i++) {
       taskList.add(new MTConnectSourceTask());
-      taskList.get(i).start(taskConfigs.get(i));
     }
 
-    for (int i =0; i<=1; i++) {
-      List<SourceRecord> sourceRecord = taskList.get(i).poll();
-      System.out.println(sourceRecord.toString());
-    }
-    sleep(1000);
-    for (int i =0; i<=1; i++) {
-      List<SourceRecord> sourceRecord = taskList.get(i).poll();
-      System.out.println(sourceRecord.toString());
-    }
-
-
-    while(true){
+    for(int j = 0; j<=2; j++){
       for (int i =0; i<=1; i++) {
+        taskList.get(i).start(taskConfigs.get(i));
         List<SourceRecord> sourceRecord = taskList.get(i).poll();
         System.out.println(sourceRecord.toString());
+        taskList.get(i).stop();
       }
       //sleep(1000);
     }

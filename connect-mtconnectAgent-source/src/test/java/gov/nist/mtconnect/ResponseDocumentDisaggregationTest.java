@@ -38,7 +38,7 @@ public class ResponseDocumentDisaggregationTest {
   public static final String TEST_MULTIPLE_TOPICS = "M80104K162N_XML; MAZAK-M77KP290337_XML";
 
   @Test
-  public void test(){
+  public void test() throws XPathExpressionException, ParserConfigurationException{
 
     Document responseDocument = this.getXMLResponseDocument();
     ResponseDocumentDisaggregator disaggregator = new ResponseDocumentDisaggregator();

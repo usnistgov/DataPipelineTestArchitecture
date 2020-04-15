@@ -16,16 +16,6 @@ public class TCPSourceTaskTest {
   public static final String SPLIT_SHDR = "split_shdr";
 
   @Test
-  public void basicTest() throws InterruptedException {
-
-    TCPSourceTask task = new TCPSourceTask();
-    Map<String, String> properties = new HashMap<String, String>();
-    task.start(properties);
-    task.poll();
-    task.stop();
-  }
-
-  @Test
   public void testWithProperties() throws InterruptedException{
     Map<String, String> properties = new HashMap<String, String>();
     properties.put(IP_ADDRESS, "localhost");

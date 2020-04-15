@@ -22,9 +22,10 @@ public class MTConnectSourceTaskTest {
     public void basicTest() {
         MTConnectSourceTask sourceTask = new MTConnectSourceTask();
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("agent_url", "http://mtconnect.mazakcorp.com:5609");
+        properties.put("agent_url", "http://mtconnect.mazakcorp.com:5612");
         properties.put("next_sequence", "-1");
         properties.put("topic_config", "5609XML");
+        properties.put("request_interval", "10000");
         sourceTask.start(properties);
 
         try {
@@ -44,6 +45,7 @@ public class MTConnectSourceTaskTest {
         properties.put("agent_url", "http://mtconnect.mazakcorp.com:5609");
         properties.put("next_sequence", "1000");
         properties.put("topic_config", "5609XML");
+        properties.put("request_interval", "10000");
         sourceTask.start(properties);
 
         try {
@@ -62,6 +64,7 @@ public class MTConnectSourceTaskTest {
         properties.put("agent_url", "http://mtconnect.mazakcorp.com");
         properties.put("next_sequence", "-1");
         properties.put("topic_config", "5609XML");
+        properties.put("request_interval", "10000");
         sourceTask.start(properties);
 
         try {
@@ -81,6 +84,7 @@ public class MTConnectSourceTaskTest {
         properties.put("device_path", "path=//Device[@name=\"Mazak\"]");
         properties.put("next_sequence", "-1");
         properties.put("topic_config", "5609XML");
+        properties.put("request_interval", "10000");
         sourceTask.start(properties);
 
         try {
