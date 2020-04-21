@@ -1,0 +1,44 @@
+% Navigate to the folder with the docker compose file in it
+cd ./Documents/DataPipelineTestArchitecture
+
+% Turn Docker on
+% This is will turn on all the services in the docker-compose.yml file (in the directory)
+sudo docker-compose up
+
+% Since docker remembers what the config was last time, you can check what topics and connectors 
+% have been created in the past (and not cleaned up)
+sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-topics --list --zookeeper zookeeper:2181
+curl -X GET http://localhost:8083/connectors
+
+% You can delete the connectors using the REST API and their respective names
+curl -X DELETE http://localhost:8083/connectors/#CONNECTORNAME
+
+% You can remove topics 
+sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-topics --zookeeper zookeeper:2181 --topic  #TOPICNAME --delete
+
+
+% We're now going to add connectors using the REST API
+curl -d @connectors/connect-mtconnect-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+
+
+% Things to note:
+% 1) If you want to add multiple connectors of the same type, make a copy of the json config file, give it a new name,then change the parameters. Make sure to give both the file and the connector unique names. The file name will be used in teh POST command above, and the connector name will show up when you list the connectors (see above)
+ 
+% You may need to create a new topic to support the connectors you just added:
+% You may need to add the topic before starting the connector?
+sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-topics --zookeeper zookeeper:2181 --topic MAZAK-M77KP290337 --create --partitions 3 --replication-factor 1 exec bash
+
+% By this point the connector should be running and processing. Here's how to look at what's being processed in a topic
+gnome-terminal -- bash -c "sudo docker run --net=datapipelinetestarchitecture_default --rm confluentinc/cp-kafka:5.1.0 kafka-console-consumer --bootstrap-server kafka:9092 --topic MAZAK-M77KP290337; exec bash"
+
+% At any point you can stop or pause/resume a connector:
+curl -X DELETE http://localhost:8083/connectors/mtconnect-source-connector
+curl -X PUT http://localhost:8083/connectors/mtconnect-source-connector/pause
+curl -X PUT http://localhost:8083/connectors/mtconnect-source-connector/resume
+
+
+% Here's the command to start the mqtt source connector that's currently connected to the mosquitto testbed:
+curl -d @connectors/connect-mqtt-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+
+
+

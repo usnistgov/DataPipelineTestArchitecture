@@ -1,11 +1,6 @@
 zookeeper/
 kafka/
 mongo-db/
-target/
-jars/
 elasticsearch/
 
-.idea/
 .DS_Store
-
-pom.xml

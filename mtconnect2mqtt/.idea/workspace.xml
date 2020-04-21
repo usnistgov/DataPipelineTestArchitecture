@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8c55db95-d406-4bbb-b4a7-98224e00564e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mtconnectsourceconnector/src/test/java/gov/nist/mtconnect/MTConnectSourceConnectorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mtconnectsourceconnector/src/test/java/gov/nist/mtconnect/MTConnectSourceConnectorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mtconnectsourceconnector/target/test-classes/gov/nist/mtconnect/MTConnectSourceConnectorTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/../mtconnectsourceconnector/target/test-classes/gov/nist/mtconnect/MTConnectSourceConnectorTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/KafkaApp/App.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/KafkaApp/KafkaConnector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/KafkaApp/KafkaRunnable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/MtcToMqtt/App.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/MtcToMqtt/DocumentConnector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/MtcToMqtt/MqttPublisher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/MtcToMqtt/MqttSubscriber.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/MtcToMqtt/PipelineTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/MtcToMqtt/StreamApp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/DocumentConnector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/FileCreator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/FileReader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/NodeProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/README_OLD.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/TestDriver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/Old/XMLTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/main1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/sequence-track.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/deprecated/sequence-track.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/test-doc.xml" beforeDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="C:\Users\tas5\Research\Github\DataPipelineTestArchitecture\mtconnect2mqtt\.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="downloadSourcesAutomatically" value="true" />
+        <option name="vmOptionsForImporter" value="-Xmx768m" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="1TZ553xisWiYmprenw3upir6pEh" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path" value="C:\Users\tas5\.m2" />
+    <property name="Downloaded.Files.Path.Enabled" value="true" />
+    <property name="Repository.Attach.Annotations" value="true" />
+    <property name="Repository.Attach.JavaDocs" value="true" />
+    <property name="Repository.Attach.Sources" value="true" />
+    <property name="last_opened_file_path" value="$MAVEN_REPOSITORY$/junit/junit/4.11" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.39647058" />
+    <property name="settings.editor.selected.configurable" value="sbt.project.settings.configurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\tas5\Research\Github\DataPipelineTestArchitecture\mtconnect2mqtt\lib" />
+      <recent name="C:\Users\tas5\Research\Github\DataPipelineTestArchitecture\mtconnect2mqtt" />
+      <recent name="C:\Users\tas5\Research\Github\DataPipelineTestArchitecture\mtconnect2mqtt\src\deprecated" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\tas5\Research\Github\DataPipelineTestArchitecture\mtconnect2mqtt\src\main\java" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.MTConnect2MQTT.start">
+    <configuration name="MTConnect2MQTT" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="main.java.MTConnect2MQTT" />
+      <module name="mtconnect2mqtt" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="deprecated.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MTConnect2MQTT.start" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="mtconnect2mqtt" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="main.java.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="main.java" />
+      <option name="MAIN_CLASS_NAME" value="main.java.MTConnect2MQTT" />
+      <option name="METHOD_NAME" value="start" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MTConnect2MQTTtest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="mtconnect2mqtt" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.MTConnect2MQTTtest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MTConnect2MQTTtest.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="mtconnect2mqtt" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.MTConnect2MQTTtest" />
+      <option name="METHOD_NAME" value="test" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.MTConnect2MQTT.start" />
+        <item itemvalue="JUnit.MTConnect2MQTTtest" />
+        <item itemvalue="JUnit.MTConnect2MQTTtest.test" />
+        <item itemvalue="Application.MTConnect2MQTT" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8c55db95-d406-4bbb-b4a7-98224e00564e" name="Default Changelist" comment="" />
+      <created>1573654590067</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573654590067</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
