@@ -28,6 +28,13 @@ public class  TCPSourceConnectorConfig extends AbstractConfig {
   public static final String SPLIT_SHDR_CONFIG = TCPSourceTask.SPLIT_SHDR;
   private static final String SPLIT_SHDR_DOC = "This is a setting important to my connector.";
 
+  public static final String MAX_CONNECTION_ATTEMPTS_CONFIG = TCPSourceTask.MAX_CONNECTION_ATTEMPTS;
+  private static final String  MAX_CONNECTION_ATTEMPTS_DOC = "This is a setting important to my connector.";
+
+
+  public static final String TIMEOUT_CONFIG = TCPSourceTask.TIMEOUT;
+  private static final String TIMEOUT_DOC = "This is a setting important to my connector.";
+
   public TCPSourceConnectorConfig(ConfigDef config, Map<String, String> parsedConfig) {
     super(config, parsedConfig);
   }
@@ -43,7 +50,9 @@ public class  TCPSourceConnectorConfig extends AbstractConfig {
         .define(TOPIC_CONFIG, Type.STRING, Importance.HIGH, TOPIC_CONFIG_DOC)
         .define(BATCH_SIZE_CONFIG, Type.STRING, "1000", Importance.LOW, BATCH_SIZE_DOC)
         .define(LINGER_MS_CONFIG, Type.STRING, "10000", Importance.LOW, LINGER_MS_DOC)
-        .define(SPLIT_SHDR_CONFIG, Type.STRING, "true", Importance.LOW, SPLIT_SHDR_DOC);
+        .define(SPLIT_SHDR_CONFIG, Type.STRING, "true", Importance.LOW, SPLIT_SHDR_DOC)
+        .define(MAX_CONNECTION_ATTEMPTS_CONFIG, Type.STRING, "5", Importance.LOW, MAX_CONNECTION_ATTEMPTS_DOC)
+        .define(TIMEOUT_CONFIG, Type.STRING, "60000", Importance.LOW, TIMEOUT_DOC);
   }
 
 }

@@ -18,6 +18,9 @@ public class TCPSourceConnector extends SourceConnector {
   public static final String LINGER_MS = TCPSourceTask.LINGER_MS;
   public static final String BATCH_SIZE = TCPSourceTask.BATCH_SIZE;
   public static final String SPLIT_SHDR = TCPSourceTask.SPLIT_SHDR;
+  public static final String MAX_CONNECTION_ATTEMPTS = TCPSourceTask.MAX_CONNECTION_ATTEMPTS;
+  public static final String TIMEOUT = TCPSourceTask.TIMEOUT;
+
   private static Logger log = LoggerFactory.getLogger(TCPSourceConnector.class);
   private TCPSourceConnectorConfig config;
 
@@ -61,6 +64,8 @@ public class TCPSourceConnector extends SourceConnector {
       taskConfig.put(LINGER_MS, config.getString(LINGER_MS));
       taskConfig.put(BATCH_SIZE, config.getString(BATCH_SIZE));
       taskConfig.put(SPLIT_SHDR, config.getString(SPLIT_SHDR));
+      taskConfig.put(MAX_CONNECTION_ATTEMPTS,config.getString(MAX_CONNECTION_ATTEMPTS));
+      taskConfig.put(TIMEOUT, config.getString(TIMEOUT));
       configs.add(taskConfig);
     }
 

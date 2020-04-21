@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class TCPSourceTaskTest {
   public static final String IP_ADDRESS = "ip_address";
   public static final String PORT = "port";
@@ -14,6 +15,8 @@ public class TCPSourceTaskTest {
   public static final String LINGER_MS = "linger_ms";
   public static final String BATCH_SIZE = "batch_size";
   public static final String SPLIT_SHDR = "split_shdr";
+  public static final String MAX_CONNECTION_ATTEMPTS = "max_connection_attempts";
+  public static final String TIMEOUT = "timeout";
 
   @Test
   public void testWithProperties() throws InterruptedException{
@@ -24,6 +27,8 @@ public class TCPSourceTaskTest {
     properties.put(LINGER_MS, "10000");
     properties.put(TOPIC_CONFIG, "VMC-3Axis_SHDR");
     properties.put(SPLIT_SHDR, "true");
+    properties.put(MAX_CONNECTION_ATTEMPTS, "2");
+    properties.put(TIMEOUT, "30000");
     TCPSourceTask task = new TCPSourceTask();
     task.start(properties);
     List<SourceRecord> output = task.poll();

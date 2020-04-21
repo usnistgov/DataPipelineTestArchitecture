@@ -14,6 +14,8 @@ public class TCPSourceConnectorTest {
   public static final String LINGER_MS = TCPSourceTask.LINGER_MS;
   public static final String BATCH_SIZE = TCPSourceTask.BATCH_SIZE;
   public static final String SPLIT_SHDR = TCPSourceTask.SPLIT_SHDR;
+  public static final String MAX_CONNECTION_ATTEMPTS = TCPSourceTask.MAX_CONNECTION_ATTEMPTS;
+  public static final String TIMEOUT = TCPSourceTask.TIMEOUT;
 
   public static final String TEST_IP_ADDRESS = "127.0.0.1";
   public static final String TEST_PORT = "7878";
@@ -21,6 +23,8 @@ public class TCPSourceConnectorTest {
   public static final String TEST_LINGER_MS = "10000";
   public static final String TEST_BATCH_SIZE = "100";
   public static final String TEST_SPLIT_SHDR = "true";
+  public static final String TEST_CONNECTION_ATTEMPTS = "5";
+  public static final String TEST_TIMEOUT = "60000";
 
   @Test
   public void testInitialConfigs() {
@@ -47,6 +51,8 @@ public class TCPSourceConnectorTest {
     parsedConfigs.put(LINGER_MS, TEST_LINGER_MS);
     parsedConfigs.put(BATCH_SIZE, TEST_BATCH_SIZE);
     parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
+    parsedConfigs.put(MAX_CONNECTION_ATTEMPTS, TEST_CONNECTION_ATTEMPTS);
+    parsedConfigs.put(TIMEOUT, TEST_TIMEOUT);
 
 
     TCPSourceConnector connector = new TCPSourceConnector();
@@ -60,9 +66,31 @@ public class TCPSourceConnectorTest {
 
     for (int i =0 ; i < records.size(); i++){
       System.out.println(records.get(i));
-
     }
+  }
+  //@Test
+  public void testGracefulFail() throws InterruptedException {
+    Map<String,String> parsedConfigs = new HashMap<>();
+    parsedConfigs.put(IP_ADDRESS, TEST_IP_ADDRESS);
+    parsedConfigs.put(PORT, TEST_PORT);
+    parsedConfigs.put(TOPIC_CONFIG, TEST_TOPIC_CONFIG);
+    parsedConfigs.put(LINGER_MS, TEST_LINGER_MS);
+    parsedConfigs.put(BATCH_SIZE, TEST_BATCH_SIZE);
+    parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
+    parsedConfigs.put(MAX_CONNECTION_ATTEMPTS, TEST_CONNECTION_ATTEMPTS);
+    parsedConfigs.put(TIMEOUT, TEST_TIMEOUT);
 
 
+    TCPSourceConnector connector = new TCPSourceConnector();
+    connector.start(parsedConfigs);
+    List<Map<String, String>> configs = connector.taskConfigs(2);
+
+    TCPSourceTask task = new TCPSourceTask();
+    task.start(configs.get(0));
+    while(true) {
+      List<SourceRecord> records = task.poll();
+      if (!records.isEmpty()){System.out.println(records.get(0));}
+      //else {task.start(configs.get(0));}
+    }
   }
 }
