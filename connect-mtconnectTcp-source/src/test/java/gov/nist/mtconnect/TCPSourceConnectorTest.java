@@ -1,6 +1,7 @@
 package gov.nist.mtconnect;
 
 import org.apache.kafka.connect.source.SourceRecord;
+import org.apache.kafka.connect.errors.ConnectException;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class TCPSourceConnectorTest {
       System.out.println(records.get(i));
     }
   }
-  //@Test
+  @Test (expected = ConnectException.class)
   public void testGracefulFail() throws InterruptedException {
     Map<String,String> parsedConfigs = new HashMap<>();
     parsedConfigs.put(IP_ADDRESS, TEST_IP_ADDRESS);
@@ -77,9 +78,11 @@ public class TCPSourceConnectorTest {
     parsedConfigs.put(LINGER_MS, TEST_LINGER_MS);
     parsedConfigs.put(BATCH_SIZE, TEST_BATCH_SIZE);
     parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
-    parsedConfigs.put(MAX_CONNECTION_ATTEMPTS, TEST_CONNECTION_ATTEMPTS);
+    parsedConfigs.put(MAX_CONNECTION_ATTEMPTS, "4");
     parsedConfigs.put(TIMEOUT, TEST_TIMEOUT);
 
+    MockAdapterService mockAdapterService = new MockAdapterService();
+    new Thread(mockAdapterService).start();
 
     TCPSourceConnector connector = new TCPSourceConnector();
     connector.start(parsedConfigs);
