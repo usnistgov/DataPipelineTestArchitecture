@@ -8,6 +8,7 @@
   - You have Kafka 2.5.0 downloaded (see #1) and it's unzipped to your home directory, e.g. `/home/tim/`
   - Same for the DataPipelineTestArchitecture
   - If you have a different version or it's stored in a different directory, hopefully you can adapt the commands below
+  - The biggest issue that you'll most likely encounter is executing the commands in the wrong directory
 
 ## 1) Download Apache Kafka and this repository
 - https://kafka.apache.org/quickstart#quickstart_download
@@ -49,7 +50,7 @@
   - `bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic M80104K162N_XML`
 - Start the mtconnect connector, by running `bin/connect-standalone.sh config/connect-standalone.properties config/connect-mtconnect-source.properties`
 - watch your data stream into kafka for hours on end
-  - `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning
+  - `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning`
 - Use `ctrl+c` to kill the process
   - Note: it'll run your battery down if you leave it running for too long
   
@@ -71,6 +72,28 @@
 - As always, use `ctrl+c` to kill the process
 
 ## 7) Managing the connectors via the REST API
-- More information coming on how to manage the connectors separately using the REST API. Start, stop, add, delete connectors dynamically.
+- Kafka Connect connectors can be managed via a REST API. Some of these steps will look familiar, but we'll be using the `connect-distributed` script and the curl statements will be POSTing .json files instead of .properties files.
+  - Documentation can be found here: https://kafka.apache.org/documentation/#connect_rest
+- Go to ./Kafka/kafka_2.12-2.5.0/config and open "connect-distributed.properties".
+  - At the very bottom you'll see "#plugin.path= ...". Remove the # (uncommenting it) and put the full path of the "connectors" folder.    
+  - For example: `plugin.path = /home/tim/Kafka/kafka_2.12-2.5.0/connectors`.
+- Copy the .json files from `./DataPipelineTestArchitecture/config` to `./Kafka/kafka_2.12-2.5.0/config`
+  - `cp ./DataPipelineTestArchitecture/config/connect-mtconnect-source.json ./Kafka/kafka_2.12-2.5.0/config`
+  - `cp ./DataPipelineTestArchitecture/config/connect-mtconnectAdapter-source.json ./Kafka/kafka_2.12-2.5.0/config`
+- With **Zookeeper** and **Kafka** already running, open another terminal tab and start distributed connect
+  - `bin/connect-distributed.sh config/connect-distributed.properties`
+- The REST API will be available by default at `http://localhost:8083`
+- To start a connector:
+  - `curl -d @config/connect-mtconnect-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
+  - You can see what has been processed: `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning`
+- Other helpful curl commands:
+  - Pause a connector: `curl -X PUT http://localhost:8083/connectors/mtconnect-source-connector/pause`
+  - Delete a *paused* connector: `curl -X DELETE http://localhost:8083/connectors/mtconnect-source-connector`
+  - See what connectors are running: `curl -X GET http://localhost:8083/connectors`
+  - Note1: You can only delete a connector that has been paused
+  - Note2: The name of the connector is provided in the .json file, not the name of the .json file  
+  
+## 8) MQTT: Installing Eclipse Mosquitto, connecting it to Kafka, and connecting it to a sensor.
+- Next on the to-do list (writing the documentation)
 
 
