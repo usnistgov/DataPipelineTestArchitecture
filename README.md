@@ -99,12 +99,14 @@
 
 ## 9) Set up Spark and Run Streaming Application
 
-- Download from: https://spark.apache.org/downloads.html
+- Download Spark from: https://spark.apache.org/downloads.html
   - I downloaded spark-3.0.0-preview2-bin-hadoop2.7.tgz
 
 - Go to the spark-3.0.0-preview2-bin-hadoop2.7/conf folder and modify the log4j.properties.template file 
   - Replace all instances of `"INFO"` with `"ERROR"` and save it as .properties file
   - This is to prevent it from printing a bunch of INFO logs everytime you run any script
+  
+- Download the SparkStreamingKafkaSHDRData.py file
   
 - Deploy the Spark Streaming Application
   - With steps 4, 5 and 6 done (kafka, zookeeper, MTConnect Agent Adapter Simulator, and MTConnect Adapter connector all running), in a new terminal tab/window, use spark-submit to launch the spark streaming application. We need to add the `Kafka 0.10+ Source for Structured Streaming` dependency via packages as below
