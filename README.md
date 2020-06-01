@@ -109,7 +109,8 @@
 - 3. Deploy the Spark Streaming Application
   - With steps 4, 5 and 6 done (kafka, zookeeper, MTConnect Agent Adapter Simulator, and MTConnect Adapter connector all running), in a new terminal tab/window, use spark-submit to launch the spark streaming application. We need to add the `Kafka 0.10+ Source for Structured Streaming` dependency via packages as below
   
-  $ `cd your_path_to_spark_directory/spark-3.0.0-preview2-bin-hadoop2.7`
+  $ `cd your_path_to_spark_directory/spark-3.0.0-preview2-bin-hadoop2.7
+  
   $ `./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview2 /your_path_to_where_application_is_saved/SparkStreamingKafkaSHDRData.py localhost:9092 subscribe VMC-3Axis_SHDR
   
   * Note: you must provide the correct version of your Spark when you use packages to add kafka dependencies. For me, it was `3.0.0-preview2
