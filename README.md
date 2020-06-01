@@ -107,6 +107,7 @@
   - This is to prevent it from printing a bunch of INFO logs everytime you run any script
   
 - Download the SparkStreamingKafkaSHDRData.py file
+  - In line 143, edit the path to your checkpoint directory. Simply create a new empty folder and provide path to it.
   
 - Deploy the Spark Streaming Application
   - With steps 4, 5 and 6 done (kafka, zookeeper, MTConnect Agent Adapter Simulator, and MTConnect Adapter connector all running), in a new terminal tab/window, use spark-submit to launch the spark streaming application. We need to add the `Kafka 0.10+ Source for Structured Streaming` dependency via packages as below
