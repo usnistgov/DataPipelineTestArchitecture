@@ -1,39 +1,99 @@
 # Creating the Data Pipeline Architecture on Ubuntu
 
-## 1) Clone this repository
-- Grab the repository at https://github.com/usnistgov/DataPipelineTestArchitecture.git
-- Create a "jars" directory inside this cloned repository.
+## Under-construction!
+- This will become a primer on how-to set up the pipeline, with more extensive documentation coming later.
+- Much of the guide will be geared toward dev environments, future guidance on multi-node, distributed implementations
+- For the most part, we'll follow the Quick Start guide: https://kafka.apache.org/quickstart
+- This was all developed and tested on Ubuntu 18.04. The sample commands assume:
+  - You have Kafka 2.5.0 downloaded (see #1) and it's unzipped to your home directory, e.g. `/home/tim/`
+  - Same for the DataPipelineTestArchitecture
+  - If you have a different version or it's stored in a different directory, hopefully you can adapt the commands below
+  - The biggest issue that you'll most likely encounter is executing the commands in the wrong directory
 
-## 2) Install Docker
-- Follow the instructions here: https://docs.docker.com/install/linux/docker-ce/ubuntu/ (Setting this up with the "Install using the repository" is the easiest, and suggested way to do this).
+## 1) Download Apache Kafka and this repository
+- https://kafka.apache.org/quickstart#quickstart_download
+- `git clone https://github.com/usnistgov/DataPipelineTestArchitecture`
 
-## 3) Download the necessary JARs
-- Download the necessary JAR files here:
-    - https://www.confluent.io/connector/kafka-connect-mqtt/
-    - https://www.confluent.io/connector/kafka-connect-mongodb-sink/
-    - https://www.confluent.io/connector/kafka-connect-elasticsearch/ (Note: For Elasticsearch to work, the `vm.max_map_count` kernel settings need to be set to at least 262144 for use. You can do this with `sudo sysctl -w vm.max_map_count=262144`).
- - Unzip the files in your "jars" directory where you cloned this repository.
+## 2) Do some stuff to the directories
+- In the folder where you have Kafka (e.g. ./Kafka/kafka_2.12-2.5.0), create a folder called "connectors"
+  - `mkdir ./Kafka/kafka_2.12-2.5.0/connectors`
+- Copy `mtconnect-source-connector-1.0-SNAPSHOT.jar` from the DataPipelineTestArchitecture/connectors folder, and put it in the "./Kafka/kafka_2.12-2.5.0/connectors" folder
+  - For example `cp ./DataPipelineTestArchitecture/connectors/mtconnect-source-connector-1.0-SNAPSHOT.jar ../Kafka/kafka_2.12-2.5.0/connectors`
+- Copy `connect-mtconnectTcp-source-1.0-SNAPSHOT.jar` too
+- Go to ./Kafka/kafka_2.12-2.5.0/config and open "connect-standalone.properties".
+  - At the very bottom you'll see "#plugin.path= ...". Remove the # (uncommenting it) and put the full path of the "connectors" folder.    
+  - For example: `plugin.path = /home/tim/Kafka/kafka_2.12-2.5.0/connectors`. This is telling Kafka connect to look in this folder for connectors.
+- Copy the .properties files in DataPipelineTestArchitecture/config to ./Kafka/kafka_2.12-2.5.0/config
+  - For example `cp ./DataPipelineTestArchitecture/config/connect-mtconnect-source.properties ../Kafka/kafka_2.12-2.5.0/config`
 
-## 4) Install the images via Docker
-- Install docker compose with `sudo apt install docker-compose`.
-- Run `sudo docker-compose up` from inside the clone repo's directory. You should be in the same folder where the "docker-compose.yml" file is located.
-- This will install all of the images for the different tools we are using, and will also create a local connection inside of Docker so they are all able to communicate with one another.
+## 3) Edit the .properties files
+- In `./Kafka/kafka_2.12-2.5.0/config`, open `connect-mtconnect-source.properties`
+- Edit the agent url, path information, and destination topic (multiple agents can be added, separated by semicolons)
+  - The example agent is from the Mazak testbed. For example:
+  - `agent_url = http://mtconnect.mazakcorp.com:5612`
+  - `device_path = path=//Device[@name=\"Mazak\"]` (notice the escape character \")
+  - `topic_config = M80104K162N_XML`
+- Note: If path is empty, the connector will grab the whole response document
+- Note2: I've been naming the topics, by the deviceID plus the data format; more guidance on naming topics coming in the future
 
-## 5) Creating topics, and connecting the Sources and Sinks
-- We need to connect our MQTT source to Kafka,Kafka to our MongoDB sink, and Kafka to our Elasticsearch sink. We also need to create our topics in Kafka to produce to/consume from. We do that by using the "connect" files to connect the sources/sinks and terminal commands to create our topics.. There's a bash script to set them all up, use `chmod u+x kafka-setup.sh` then `./kafka-setup.sh`. This will also open new terminals that will then be listening to these topics so we can then check if everything is working properly.
-- Now our sources and sinks should all be connected, and our data pipeline should be up and running. This can be checked by typing `curl localhost:8083/connectors/<Your source or sink name>/status | jq`(you may need to install jq with `sudo apt install jq` - it's just a JSON processor that prints JSON text out in a more readable, or "pretty" format). The name of the source or sink is located in the json file, labeled "name". So, for example, to check the status of the MongoDB sink you'd enter `curl localhost:8083/connectors/mongodb-sink/status | jq`.
 
-## 6) Setup Java
-- If you already use Java or have it set up, you can skip this step.
-- Using Ubuntu you should already have Java installed, check with `java -version`, and check you have the JDK with `javac -version`. If you don't have them installed then you can download them with `sudo apt install default-jre` and `sudo apt-get install openjdk-11-jdk`.
-- Download IntelliJ using either the Ubuntu Software Center or with `sudo snap install intellij-idea-community --classic`.
-- Load IntelliJ. Select import project and import the "DataPipelineTestArchitecture" directory. Follow the steps, making sure to import from External using Maven, and if you need to setup your SDK it should be in "/usr/lib/jvm/java-11-openjdk-amd64". If it is not, use `whereis java` in the terminal to find where it is located.
-- Upon loading into IntelliJ, go to "Settings -> Maven -> Importing" and check the box that says "Import Maven projects automatically". If you are asked to "Add as Maven Project" do that as well.
-- Give IntelliJ a couple of minutes to install all of the dependencies.
+## 4) Start Kafka
+- You'll need two separate terminal tabs open, and working in the kafka directory
+  - For example, `cd ./Kafka/kafka_2.12-2.5.0`
+- Start a Zookeeper instance: `bin/zookeeper-server-start.sh config/zookeeper.properties`
+- Start a Kafka instance: `bin/kafka-server-start.sh config/server.properties`
+- Note: it may be worth creating systemctl scripts to handle this?
 
-## 7) Test that everything is working
-- There is a test program and XML file available, named "PipelineTest.java". Go ahead and run the program. If everything is working correctly, the program should grab the data from the XML file, produce it to MQTT who sends it to Kafka, then both MongoDB and Elasticsearch should consume that data as JSON.
-- If everything worked properly, you should see the data from the test file being consumed in both terminal windows. `mqtt-to-kafka` will be in XML format and `json_topic` will be in JSON.
-- As long as that worked properly, then it should be in both MongoDB and Elasticsearch. We can look to be sure.
-  - Open a new terminal and enter `sudo docker exec -it mongo mongo-db`. It will open the CLI for MongoDB. With `show dbs` we should see "test" as an option. Go in that database with `use test` and then `show collections` should give us "MyCollection". Finally, with `db.MyCollection.find()` we should see our test data populated in MongoDB. You can exit out of MongoDB with `exit`.
-  - In the same terminal, go ahead and enter `curl localhost:9200/json_topic_index/_search?pretty`. This should show our test data now populated in Elasticsearch.
+## 5) Start MTConnect Agent connector
+- This connector will collect the MTConnect XML Response document and store it in the specified topic
+- Add a topic with topic name corresponding to the `connect-mtconnect-source.properties` file
+  - `bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic M80104K162N_XML`
+- Start the mtconnect connector, by running `bin/connect-standalone.sh config/connect-standalone.properties config/connect-mtconnect-source.properties`
+- watch your data stream into kafka for hours on end
+  - `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning`
+- Use `ctrl+c` to kill the process
+  - Note: it'll run your battery down if you leave it running for too long
+  
+## 6) Start MTConnect Adapter connector
+- This connector will collect the raw SHDR output from an MTConnect adapter
+- This step assumes that you have an adapter to test with, or have installed the adapter simulator found here:
+  - http://mtcup.org/wiki/Installing_C%2B%2B_Agent_on_Ubuntu
+  - Once you do, you can start the adapter:
+    - via systemctl: `sudo systemctl start mtc_adapter`
+    - or `/usr/bin/ruby /etc/mtconnect/adapter/run_scenario.rb -l /etc/mtconnect/adapter/VMC-3Axis-Log.txt`
+    - First is easier, but the second approach allows you to swap out the log file more easily
+- Edit the `connect-mtconnectTCP-source.properties` file
+- Add the topic
+- Start the connector: `bin/connect-standalone.sh config/connect-standalone.properties config/connect-mtconnectTCP-source.properties`
+- **Note**: if you want to run both connectors at the same time, you need to start them at the same time (using the same the Connect instance)
+  - For example: `bin/connect-standalone.sh config/connect-standalone.properties config/connect-mtconnect-source.properties config/connect-mtconnectTCP-source.properties`
+- watch your data stream into kafka for hours on end
+  - `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic VMC-3Axis_SHDR --from-beginning
+- As always, use `ctrl+c` to kill the process
+
+## 7) Managing the connectors via the REST API
+- Kafka Connect connectors can be managed via a REST API. Some of these steps will look familiar, but we'll be using the `connect-distributed` script and the curl statements will be POSTing .json files instead of .properties files.
+  - Documentation can be found here: https://kafka.apache.org/documentation/#connect_rest
+- Go to ./Kafka/kafka_2.12-2.5.0/config and open "connect-distributed.properties".
+  - At the very bottom you'll see "#plugin.path= ...". Remove the # (uncommenting it) and put the full path of the "connectors" folder.    
+  - For example: `plugin.path = /home/tim/Kafka/kafka_2.12-2.5.0/connectors`.
+- Copy the .json files from `./DataPipelineTestArchitecture/config` to `./Kafka/kafka_2.12-2.5.0/config`
+  - `cp ./DataPipelineTestArchitecture/config/connect-mtconnect-source.json ./Kafka/kafka_2.12-2.5.0/config`
+  - `cp ./DataPipelineTestArchitecture/config/connect-mtconnectAdapter-source.json ./Kafka/kafka_2.12-2.5.0/config`
+- With **Zookeeper** and **Kafka** already running, open another terminal tab and start distributed connect
+  - `bin/connect-distributed.sh config/connect-distributed.properties`
+- The REST API will be available by default at `http://localhost:8083`
+- To start a connector:
+  - `curl -d @config/connect-mtconnect-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
+  - You can see what has been processed: `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning`
+- Other helpful curl commands:
+  - Pause a connector: `curl -X PUT http://localhost:8083/connectors/mtconnect-source-connector/pause`
+  - Delete a *paused* connector: `curl -X DELETE http://localhost:8083/connectors/mtconnect-source-connector`
+  - See what connectors are running: `curl -X GET http://localhost:8083/connectors`
+  - Note1: You can only delete a connector that has been paused
+  - Note2: The name of the connector is provided in the .json file, not the name of the .json file  
+  
+## 8) MQTT: Installing Eclipse Mosquitto, connecting it to Kafka, and connecting it to a sensor.
+- Next on the to-do list (writing the documentation)
+
+
