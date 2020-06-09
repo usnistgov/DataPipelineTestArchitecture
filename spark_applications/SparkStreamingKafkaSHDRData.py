@@ -23,7 +23,9 @@
 
 `$ ./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview2,\
 org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.0.0-preview2,\
-org.apache.spark:spark-streaming-kafka-0-10_2.12:3.0.0-preview2 \
+org.apache.spark:spark-streaming-kafka-0-10_2.12:3.0.0-preview2,\
+org.apache.spark:spark-core_2.12:3.0.0-preview2,\
+org.apache.spark:spark-streaming-kafka-0-10-assembly_2.12:3.0.0-preview2 \
 /Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py localhost:9092 subscribe VMC-3Axis_SHDR
 
 
@@ -210,7 +212,7 @@ if __name__ == "__main__":
         .option('truncate', 'false')\
         .option("topic", "VMC-3Axis_Ycom")\
         .option("checkpointLocation", "~/Documents/TimSprockProject/Experiment/checkpoint")\
-        .outputMode('complete')\
+        .outputMode('update')\
         .start()
 
     # try this query with append or update and see if it works?
