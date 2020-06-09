@@ -114,7 +114,7 @@
     $ `java -version`
     If this does not give version 8, we need to update the default one to be version 8
     Use command 
-    $ `export JAVA_HOME=`/usr/libexec/java_home -v 1.8` ` - this will only modify it for that terminal session
+    $ export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  - this will only modify it for that terminal session
     To permanently change, update your bash profile and add that command at the top
     $ `nano ~/.bash_profile` 
     Save and close your bash_profile
