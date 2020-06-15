@@ -34,20 +34,11 @@ localhost:9092 subscribe VMC-3Axis_SHDR
 
 for spark version 2.4.6 with Kafka broker version 0.10.0 or higher
 
-./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:2.4.6,org.apache.spark:spark-streaming-kafka-0-10_2.12:2.4.6 \
+./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6,\
+org.apache.spark:spark-streaming-kafka-0-10_2.11:2.4.6 \
 /Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
 localhost:9092 subscribe VMC-3Axis_SHDR
 
-
-for spark version 2.4.5 with Kafka broker version 0.8.0 or higher - not sure which packages are needed
-
-./bin/spark-submit --packages org.apache.spark:spark-core_2.12:2.4.5,\
-org.apache.spark:spark-streaming_2.12:2.4.5,\
-org.apache.spark:spark-sql_2.12:2.4.5 \
-org.apache.spark:spark-streaming-kafka-0-8_2.11:2.4.5,\
-org.apache.spark:spark-streaming-kafka-0-8-assembly_2.11:2.4.5 \
-/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
-localhost:9092 subscribe VMC-3Axis_SHDR
 
 """
 
