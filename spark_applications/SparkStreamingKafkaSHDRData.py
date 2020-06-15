@@ -17,19 +17,40 @@
    |  specified for Kafka source.
    <topics> Different value format depends on the value of 'subscribe-type'.
 
- Running our spark program to process SHDR data
 
- NOTE: change path to checkpoint directory in line 212
+NOTE: change path to checkpoint directory in line 212
 
-`$ ./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview2,\
-org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.0.0-preview2,\
-org.apache.spark:spark-streaming-kafka-0-10_2.12:3.0.0-preview2,\
-org.apache.spark:spark-core_2.12:3.0.0-preview2,\
-org.apache.spark:spark-streaming-kafka-0-10-assembly_2.12:3.0.0-preview2 \
-/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py localhost:9092 subscribe VMC-3Axis_SHDR
+# -----------------------------------------------------------------------------------------------
 
+/// Running our spark program to process SHDR data: ///
+
+for spark version 3.0.0-preview2 with Kafka broker version 0.10.0 or higher 
+
+./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview2,\
+org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.0.0-preview2 \
+/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
+localhost:9092 subscribe VMC-3Axis_SHDR
+
+
+for spark version 2.4.6 with Kafka broker version 0.10.0 or higher
+
+./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:2.4.6,org.apache.spark:spark-streaming-kafka-0-10_2.12:2.4.6 \
+/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
+localhost:9092 subscribe VMC-3Axis_SHDR
+
+
+for spark version 2.4.5 with Kafka broker version 0.8.0 or higher - not sure which packages are needed
+
+./bin/spark-submit --packages org.apache.spark:spark-core_2.12:2.4.5,\
+org.apache.spark:spark-streaming_2.12:2.4.5,\
+org.apache.spark:spark-sql_2.12:2.4.5 \
+org.apache.spark:spark-streaming-kafka-0-8_2.11:2.4.5,\
+org.apache.spark:spark-streaming-kafka-0-8-assembly_2.11:2.4.5 \
+/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
+localhost:9092 subscribe VMC-3Axis_SHDR
 
 """
+
 from __future__ import print_function
 
 import sys
@@ -55,26 +76,19 @@ if __name__ == "__main__":
     # Start the Spark session
     spark = SparkSession\
         .builder\
-        .appName("StructuredKafkaWordCount")\
+        .appName("SparkStreamingKafkaSHDRData")\
         .getOrCreate()
 
-    # Define the input data json schema needed to interpret the "value" in kafka stream
-    # note: "schema", "payload" here must match the names within the value data. otherwise it won't work
-    # this is probably not ideal as it is hardcoded. Maybe we can load a small batch of data and first infer schema
-    jsonSchema = StructType().add("schema", StringType())\
-                             .add("payload", StringType())
-    print("\njsonSchema")
-    print(jsonSchema)
-    # StructType(List(StructField(schema,StringType,true),StructField(payload,StringType,true)))
 
     # Create DataSet representing the stream of input lines from kafka
     lines = spark\
         .readStream\
         .format("kafka")\
         .option("kafka.bootstrap.servers", bootstrapServers)\
-        .option("kafka.batch.size",10)\
         .option(subscribeType, topics)\
+        .option("failOnDataLoss", "false")\
         .load()
+    # .option("kafka.batch.size",10)\
 
     print("\nschema of lines")
     lines.printSchema()
@@ -86,6 +100,13 @@ if __name__ == "__main__":
     #  |-- offset: long (nullable = true)
     #  |-- timestamp: timestamp (nullable = true)
     #  |-- timestampType: integer (nullable = true)
+
+    # Define the input data json schema needed to interpret the "value" in kafka stream
+    jsonSchema = StructType().add("schema", StringType())\
+                             .add("payload", StringType())
+    print("\njsonSchema")
+    print(jsonSchema)
+    # StructType(List(StructField(schema,StringType,true),StructField(payload,StringType,true)))
 
     # Create new dataframe using JSON schema to parse key and value
     parsedlines = lines.select( \
@@ -153,7 +174,6 @@ if __name__ == "__main__":
     #  |-- offset: long (nullable = true)
     #  |-- topic: string (nullable = true)
 
-
     Ycom_DF = parsedData.filter(parsedData['key'] == "Ycom")
     Xact_DF = parsedData.filter(parsedData['key'] == "Xact")
     Yact_DF = parsedData.filter(parsedData['key'] == "Yact")
@@ -162,25 +182,27 @@ if __name__ == "__main__":
     block_DF = parsedData.filter(parsedData['key'] == "block")
 
 
+    # -----------------------------------------------------------------------------------------------
+    # BASIC STATISTICS
+
     # Group the data by window and key, and compute the average of each group (using kafka timestamp)
 
     windowDuration = "2 minutes" # gives the size of window, specified as integer number of seconds
     slideDuration = "1 minutes" # gives the amount of time successive windows are offset from one another,
+    lateThreshold = "3 minutes" # how late is the data allowed to be
 
     # should change this to be done based on sensor timestamp, not kafka event timestamp ?
     avgVals = parsedData\
-        .withWatermark("timestamp", "5 minutes") \
+        .withWatermark("timestamp", lateThreshold) \
         .groupBy(\
             window(parsedData.timestamp, windowDuration, slideDuration),\
             parsedData.key)\
         .agg(mean(parsedData.value)) 
-        # .count()
 
-    # avgVals = avgVals.withColumnRenamed("count", "value")
     avgVals = avgVals.withColumnRenamed("avg(value)", "value")
 
     print("\nschema of avgVals")
-    avgVals.printSchema()      
+    avgVals.printSchema()
     # root
     #  |-- window: struct (nullable = true)
     #  |    |-- start: timestamp (nullable = true)
@@ -188,12 +210,20 @@ if __name__ == "__main__":
     #  |-- key: string (nullable = true)
     #  |-- value: double (nullable = true)
 
-    # query = parsedData\
-    #     .writeStream\
-    #     .outputMode('append')\
-    #     .format('console')\
-    #     .option('truncate', 'false')\
-    #     .start()
+
+    # -----------------------------------------------------------------------------------------------
+    # WRITING QUERIES TO DIFFERENT SINKS
+
+    # Start running the query that prints the parsedData to the console or memory
+    query = parsedData\
+        .writeStream\
+        .outputMode('append')\
+        .format('console')\
+        .queryName("Ycom")\
+        .option('truncate', 'false')\
+        .start()
+        # .option('numRows',"50")\
+
 
     # Start running the query that prints the running averages to the console
     query_avg = avgVals\
@@ -203,8 +233,10 @@ if __name__ == "__main__":
         .option('truncate', 'false')\
         .start()
 
-    # Write the above query to a kafka topic - not yet working
-    query_Ycom = avgVals\
+
+    # PLEASE NOTE: so far able to write any processed data frame to kafka topic, except for streaming aggregates
+    # try writing avgVals instead of Ycom_DF, but use only append or udpate modes
+    query_kafka = parsedData\
         .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
         .writeStream\
         .format('kafka')\
@@ -212,11 +244,12 @@ if __name__ == "__main__":
         .option('truncate', 'false')\
         .option("topic", "VMC-3Axis_Ycom")\
         .option("checkpointLocation", "~/Documents/TimSprockProject/Experiment/checkpoint")\
-        .outputMode('update')\
+        .outputMode('append')\
         .start()
 
-    # try this query with append or update and see if it works?
+    # try this query with either append or update and see if it works?
 
-    query_avg.awaitTermination()
+    # query_avg.awaitTermination()
+    query_kafka.awaitTermination()
 
 
