@@ -18,26 +18,18 @@
    <topics> Different value format depends on the value of 'subscribe-type'.
 
 
-NOTE: change path to checkpoint directory in line 212
-
 # -----------------------------------------------------------------------------------------------
 
 /// Running our spark program to process SHDR data: ///
 
-for spark version 3.0.0-preview2 with Kafka broker version 0.10.0 or higher 
 
-./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview2,\
-org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.0.0-preview2 \
+for spark version 3.0.0-bin-hadoop3.2 with Kafka broker version 0.10.0 or higher 
+
+./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0,\
+org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.0.0 \
 /Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
 localhost:9092 subscribe VMC-3Axis_SHDR
 
-
-for spark version 2.4.6 with Kafka broker version 0.10.0 or higher
-
-./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6,\
-org.apache.spark:spark-streaming-kafka-0-10_2.11:2.4.6 \
-/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
-localhost:9092 subscribe VMC-3Axis_SHDR
 
 
 """
@@ -180,17 +172,25 @@ if __name__ == "__main__":
 
     windowDuration = "2 minutes" # gives the size of window, specified as integer number of seconds
     slideDuration = "1 minutes" # gives the amount of time successive windows are offset from one another,
-    lateThreshold = "3 minutes" # how late is the data allowed to be
+    lateThreshold = "0 minutes" # how late is the data allowed to be
 
     # should change this to be done based on sensor timestamp, not kafka event timestamp ?
     avgVals = parsedData\
         .withWatermark("timestamp", lateThreshold) \
         .groupBy(\
-            window(parsedData.timestamp, windowDuration, slideDuration),\
+            window("timestamp", windowDuration, slideDuration),\
             parsedData.key)\
         .agg(mean(parsedData.value)) 
 
-    avgVals = avgVals.withColumnRenamed("avg(value)", "value")
+            # window(parsedData.timestamp, windowDuration, slideDuration),\
+
+    avgVals = avgVals\
+        .select(\
+            to_json(struct("window", "key", "avg(value)")).alias("value"),\
+            col("key")) 
+
+
+    # avgVals = avgVals.withColumnRenamed("avg(value)", "value")
 
     print("\nschema of avgVals")
     avgVals.printSchema()
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     # Start running the query that prints the running averages to the console
     query_avg = avgVals\
         .writeStream\
-        .outputMode('complete')\
+        .outputMode('append')\
         .format('console')\
         .option('truncate', 'false')\
         .start()
@@ -227,16 +227,18 @@ if __name__ == "__main__":
 
     # PLEASE NOTE: so far able to write any processed data frame to kafka topic, except for streaming aggregates
     # try writing avgVals instead of Ycom_DF, but use only append or udpate modes
-    query_kafka = parsedData\
+    query_kafka = avgVals\
         .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
         .writeStream\
         .format('kafka')\
         .option("kafka.bootstrap.servers", "localhost:9092")\
         .option('truncate', 'false')\
         .option("topic", "VMC-3Axis_Ycom")\
-        .option("checkpointLocation", "~/Documents/TimSprockProject/Experiment/checkpoint")\
+        .option("checkpointLocation", "checkpoint")\
         .outputMode('append')\
         .start()
+
+        # .option("checkpointLocation", "~/Documents/TimSprockProject/Experiment/checkpoint")\
 
     # try this query with either append or update and see if it works?
 
