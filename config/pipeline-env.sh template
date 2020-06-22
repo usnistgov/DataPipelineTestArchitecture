@@ -5,6 +5,7 @@
 # may need to first call >sudo chmod -x ./pipeline-env.sh
 
 #Paths to major components
+export DATAPIPELINE=
 export KAFKA=
 export HADOOP=
 export SPARK=
