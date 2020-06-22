@@ -245,4 +245,3 @@ if __name__ == "__main__":
     # query_avg.awaitTermination()
     query_kafka.awaitTermination()
 
-
