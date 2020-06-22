@@ -100,9 +100,27 @@
 ## 9) Set up Spark and Run Streaming Application
 
 - Download Spark from: https://spark.apache.org/downloads.html
-  - I downloaded spark-3.0.0-preview2-bin-hadoop2.7.tgz
+  - I downloaded `spark-2.4.5-bin-hadoop2.7`
 
-- Go to the spark-3.0.0-preview2-bin-hadoop2.7/conf folder and modify the log4j.properties.template file 
+- Spark needs JDK version 8. So first check if you have that installed with the following command:
+  - $ `/usr/libexec/java_home -V`
+  - This should list all versions of JDK
+  - Or you can specifically check if version 8 is available via:
+  - $ `/usr/libexec/java_home -v 1.8`
+  - If it's not available, download from: https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html
+
+- Now we need to make sure that JDK 8 is set as the default one:
+  - $ `java -version`
+  - If this does not give version 8, we need to update the default one to be version 8. Use following command
+  - $ export JAVA_HOME=`/usr/libexec/java_home -v 1.8`  - this will only modify it for that terminal session
+  - To permanently change though, update your bash profile and add that command at the top
+  - $ `nano ~/.bash_profile` 
+  - Save and close your bash_profile
+  - Now run this command, which keeps the variable persistant when you open a new bash window 
+  - $ `source ~/.bash_profile` 
+
+
+- Go to the spark-2.4.5-bin-hadoop2.7/conf folder and modify the log4j.properties.template file 
   - Replace all instances of `"INFO"` with `"ERROR"` and save it as .properties file
   - This is to prevent it from printing a bunch of INFO logs everytime you run any script
   
