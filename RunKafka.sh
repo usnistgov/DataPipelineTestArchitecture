@@ -3,11 +3,11 @@
 # script to start zookeeper, kafka, and the distributed connector
 # can be used as a template to spin up distributed kafka nodes 
 
-KAFKA_DIR=/home/tim/Kafka/kafka_2.12-2.4.1 # directory where kafka lives
+#KAFKA=/home/tim/Kafka/kafka_2.12-2.5.0 # directory where kafka lives
 
 # Start a Zookeeper instance: 
 echo ; echo Starting Zookeeper...
-cd $KAFKA_DIR # change to your directory
+cd $KAFKA # change to your directory
 bin/zookeeper-server-start.sh config/zookeeper.properties 1>../ZookeeperOutput.txt 2>../ZookeeperError.txt & # run this in the background, and put the stadout and stderror into files  
 ZOOKEEPER_PID=$! # save the process ID
 echo The Process ID of Zookeper instance is $ZOOKEEPER_PID # display process ID
