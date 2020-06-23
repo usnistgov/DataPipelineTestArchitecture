@@ -3,31 +3,39 @@
 ## Under-construction!
 - This will become a primer on how-to set up the pipeline, with more extensive documentation coming later.
 - Much of the guide will be geared toward dev environments, future guidance on multi-node, distributed implementations
-- For the most part, we'll follow the Quick Start guide: https://kafka.apache.org/quickstart
-- This was all developed and tested on Ubuntu 18.04. The sample commands assume:
-  - You have Kafka 2.5.0 downloaded (see #1) and it's unzipped to your home directory, e.g. `/home/tim/`
-  - Same for the DataPipelineTestArchitecture
-  - If you have a different version or it's stored in a different directory, hopefully you can adapt the commands below
-  - The biggest issue that you'll most likely encounter is executing the commands in the wrong directory
+  
+## 0) Software Requirements
+The following software versions were used for this implementation:
+- Ubuntu 18.04
+- Apache Kafka 2.5.0: https://www.apache.org/dyn/closer.cgi?path=/kafka/2.5.0/kafka_2.12-2.5.0.tgz
+- Apache Spark 3.0.0 pre-built for Hadoop 3.2: https://www.apache.org/dyn/closer.lua/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz
+- Apache Hadoop 3.2.1: https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz
+- Eclipse Mosquitto 1.6.10: https://mosquitto.org/download/ (https://mosquitto.org/files/source/mosquitto-1.6.10.tar.gz)
+- Python 3.6.10: https://www.python.org/downloads/release/python-3610/
+  - Python 3.7 messed up ubuntu 18.04
+- Java OpenJdk 11: https://openjdk.java.net/projects/jdk/11/
+  - Kafka is tested for 14, but Spark is only tested for up to 11.
+- Data Pipeline files: - `git clone https://github.com/usnistgov/DataPipelineTestArchitecture`
 
-## 1) Download Apache Kafka and this repository
-- https://kafka.apache.org/quickstart#quickstart_download
-- `git clone https://github.com/usnistgov/DataPipelineTestArchitecture`
+## 1) Configure the environmental variables
+- Complete the `../DataPipelineTestArchitecture/config/pipeline-env.sh` file with absolute paths
+- Move the environmental variables file to bash profile
+  - `sudo cp ./DataPipelineTestArchitecture/config/pipeline-env.sh /etc/profile.d`
+  - make it immediately useful: `source /etc/profile.d/pipeline-env.sh`
+  - in the future this can be modifed by `sudo nano /etc/profile.d/pipeline-env.sh`
+- Go to $KAFKA/config and open "connect-distributed.properties".
+  - e.g. `nano $KAFKA/config/connect-distributed.properties`
+  - At the very bottom you'll see "#plugin.path= ...". Remove the # (uncommenting it) and replace with `plugin.path=$KafkaConnectors`.
+    - This is telling Kafka connect to look in this folder for connectors.
 
-## 2) Do some stuff to the directories
-- In the folder where you have Kafka (e.g. ./Kafka/kafka_2.12-2.5.0), create a folder called "connectors"
-  - `mkdir ./Kafka/kafka_2.12-2.5.0/connectors`
-- Copy `mtconnect-source-connector-1.0-SNAPSHOT.jar` from the DataPipelineTestArchitecture/connectors folder, and put it in the "./Kafka/kafka_2.12-2.5.0/connectors" folder
-  - For example `cp ./DataPipelineTestArchitecture/connectors/mtconnect-source-connector-1.0-SNAPSHOT.jar ../Kafka/kafka_2.12-2.5.0/connectors`
-- Copy `connect-mtconnectTcp-source-1.0-SNAPSHOT.jar` too
-- Go to ./Kafka/kafka_2.12-2.5.0/config and open "connect-standalone.properties".
-  - At the very bottom you'll see "#plugin.path= ...". Remove the # (uncommenting it) and put the full path of the "connectors" folder.    
-  - For example: `plugin.path = /home/tim/Kafka/kafka_2.12-2.5.0/connectors`. This is telling Kafka connect to look in this folder for connectors.
-- Copy the .properties files in DataPipelineTestArchitecture/config to ./Kafka/kafka_2.12-2.5.0/config
-  - For example `cp ./DataPipelineTestArchitecture/config/connect-mtconnect-source.properties ../Kafka/kafka_2.12-2.5.0/config`
+## 2) Start Kafka
+- `sudo bash $DATAPIPELINE/RunKafka.sh`
+  - Before you run it for the first time: `sudo chmod -x $DATAPIPELINE/RunKafka.sh`
+  - While you're doing that, do it for the shutdown script too: `sudo chmod -x $DATAPIPELINE/KillKafka.sh`
 
-## 3) Edit the .properties files
-- In `./Kafka/kafka_2.12-2.5.0/config`, open `connect-mtconnect-source.properties`
+## 3) Edit the connectors config files
+- In `$Kafka/config`, open `connect-mtconnect-source.properties`
+  - `nano $KafkaConfig/connect-mtconnect-source.json`
 - Edit the agent url, path information, and destination topic (multiple agents can be added, separated by semicolons)
   - The example agent is from the Mazak testbed. For example:
   - `agent_url = http://mtconnect.mazakcorp.com:5612`
@@ -35,14 +43,6 @@
   - `topic_config = M80104K162N_XML`
 - Note: If path is empty, the connector will grab the whole response document
 - Note2: I've been naming the topics, by the deviceID plus the data format; more guidance on naming topics coming in the future
-
-
-## 4) Start Kafka
-- You'll need two separate terminal tabs open, and working in the kafka directory
-  - For example, `cd ./Kafka/kafka_2.12-2.5.0`
-- Start a Zookeeper instance: `bin/zookeeper-server-start.sh config/zookeeper.properties`
-- Start a Kafka instance: `bin/kafka-server-start.sh config/server.properties`
-- Note: it may be worth creating systemctl scripts to handle this?
 
 ## 5) Start MTConnect Agent connector
 - This connector will collect the MTConnect XML Response document and store it in the specified topic
