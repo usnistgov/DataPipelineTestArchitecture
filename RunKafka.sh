@@ -34,4 +34,4 @@ echo "CONNECT_PID" $CONNECT_PID > ../ProcessIDs.txt
 echo "KAFKA_PID" $KAFKA_PID >> ../ProcessIDs.txt
 echo "ZOOKEEPER_PID" $ZOOKEEPER_PID >> ../ProcessIDs.txt
 
-chmod +rwx /path/Kafka/ProcessIDs.txt
+chmod +rwx $KAFKA/ProcessIDs.txt
