@@ -39,7 +39,7 @@ The following software versions were used for this implementation:
 - Kafka Connect connectors can be managed via a REST API, using the curl statements to POST .json config files.
    - Documentation can be found here: https://kafka.apache.org/documentation/#connect_rest
 - The REST API will be available by default at `http://localhost:8083`
-### 3a.i) Connecting to an MTConnect Agent
+### 3a) Connecting to an MTConnect Agent
 - This connector will collect the MTConnect XML Response document and store it in the specified topic
 - You'll need to create and configure a separate .json file for each set of agents you want to connect to
   - It may make sense to configure a separate .json for each agent (tbd how to manage the config files)
@@ -50,10 +50,7 @@ The following software versions were used for this implementation:
   - `agent_url = http://mtconnect.mazakcorp.com:5612`
   - `device_path = path=//Device[@name=\"Mazak\"]` (notice the escape character \")
   - `topic_config = M80104K162N_XML`
-- Note: If path is empty, the connector will grab the whole response document
-- Note2: I've been naming the topics, by the deviceID plus the data format; more guidance on naming topics coming in the future
-
-### 3a.ii) Starting the MTConnect Agent connector
+  - Note: If path is empty, the connector will grab the whole response document
 - Add a topic with topic name corresponding to the `connect-mtconnect-source.json` file
   - `$KAFKA/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic M80104K162N_XML`
 - Start the mtconnect connector using the REST API
@@ -62,20 +59,18 @@ The following software versions were used for this implementation:
   - `$KAFKA/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning`
   
 
-## 3b.i) Connecting to MTConnect Adapter
+### 3b) Connecting to MTConnect Adapter
 - This connector will collect the raw SHDR output from an MTConnect adapter
 - This step assumes that you have an adapter to test with, or have installed the adapter simulator found here:
   - http://mtcup.org/wiki/Installing_C%2B%2B_Agent_on_Ubuntu
   - Once you do, you can start the adapter:
-    - via systemctl: `sudo systemctl start mtc_adapter`
-    - or `/usr/bin/ruby /etc/mtconnect/adapter/run_scenario.rb -l /etc/mtconnect/adapter/VMC-3Axis-Log.txt`
-    - First is easier, but the second approach allows you to swap out the log file more easily
+    - `/usr/bin/ruby /etc/mtconnect/adapter/run_scenario.rb -l /etc/mtconnect/adapter/VMC-3Axis-Log.txt`
 - Edit the `$KafkaConfig/connect-mtconnectTCP-source.json` file
   - `"ip_address": "127.0.0.1",` (this is localhost for the adapter simulation)
-	- `"port": "7878",` (this is the default port for adapters)
-	- `"topic_config": "VMC-3Axis_SHDR",`
+  - `"port": "7878",` (this is the default port for adapters)
+  - `"topic_config": "VMC-3Axis_SHDR",`
 - Add the topic
-  - - `$KAFKA/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic VMC-3Axis_SHDR`
+  - `$KAFKA/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic VMC-3Axis_SHDR`
 - Start the connector: 
   - `curl -d @$KafkaConfig/connect-mtconnectTCP-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
 - watch your data stream into kafka for hours on end
