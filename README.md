@@ -41,15 +41,13 @@ The following software versions were used for this implementation:
 - The REST API will be available by default at `http://localhost:8083`
 ### 3a) Connecting to an MTConnect Agent
 - This connector will collect the MTConnect XML Response document and store it in the specified topic
-- You'll need to create and configure a separate .json file for each set of agents you want to connect to
-  - It may make sense to configure a separate .json for each agent (tbd how to manage the config files)
 - In `$Kafka/config`, open `connect-mtconnect-source.json`
   - `nano $KafkaConfig/connect-mtconnect-source.json`
 - Edit the agent url, path information, and destination topic (multiple agents can be added, separated by semicolons)
   - The example agent is from the Mazak testbed. For example:
-  - `agent_url = http://mtconnect.mazakcorp.com:5612`
-  - `device_path = path=//Device[@name=\"Mazak\"]` (notice the escape character \")
-  - `topic_config = M80104K162N_XML`
+  - `"agent_url" : "http://mtconnect.mazakcorp.com:5612"`
+  - `"device_path" : "path=//Device[@name=\"Mazak\"]"` (notice the escape character \")
+  - `"topic_config" : "M80104K162N_XML"`
   - Note: If path is empty, the connector will grab the whole response document
 - Add a topic with topic name corresponding to the `connect-mtconnect-source.json` file
   - `$KAFKA/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic M80104K162N_XML`
@@ -57,6 +55,8 @@ The following software versions were used for this implementation:
   - `curl -d @$KafkaConfig/connect-mtconnect-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
 - watch your data stream into kafka for hours on end
   - `$KAFKA/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic M80104K162N_XML --from-beginning`
+- *Note: * You'll need to create and configure a separate .json file for each set of agents you want to connect to
+  - It may make sense to configure a separate .json for each agent (tbd how to manage the config files)
   
 
 ### 3b) Connecting to MTConnect Adapter
