@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TCPSourceConnectorTest {
-  public static final String IP_ADDRESS = TCPSourceTask.IP_ADDRESS;
-  public static final String PORT = TCPSourceTask.PORT;
-  public static final String TOPIC_CONFIG = TCPSourceTask.TOPIC_CONFIG;
-  public static final String LINGER_MS = TCPSourceTask.LINGER_MS;
-  public static final String BATCH_SIZE = TCPSourceTask.BATCH_SIZE;
-  public static final String SPLIT_SHDR = TCPSourceTask.SPLIT_SHDR;
-  public static final String MAX_CONNECTION_ATTEMPTS = TCPSourceTask.MAX_CONNECTION_ATTEMPTS;
-  public static final String TIMEOUT = TCPSourceTask.TIMEOUT;
+public class AdapterSourceConnectorTest {
+  public static final String IP_ADDRESS = AdapterSourceTask.IP_ADDRESS;
+  public static final String PORT = AdapterSourceTask.PORT;
+  public static final String TOPIC_CONFIG = AdapterSourceTask.TOPIC_CONFIG;
+  public static final String LINGER_MS = AdapterSourceTask.LINGER_MS;
+  public static final String BATCH_SIZE = AdapterSourceTask.BATCH_SIZE;
+  public static final String SPLIT_SHDR = AdapterSourceTask.SPLIT_SHDR;
+  public static final String MAX_CONNECTION_ATTEMPTS = AdapterSourceTask.MAX_CONNECTION_ATTEMPTS;
+  public static final String TIMEOUT = AdapterSourceTask.TIMEOUT;
 
   public static final String TEST_IP_ADDRESS = "127.0.0.1";
   public static final String TEST_PORT = "7878";
@@ -38,7 +38,7 @@ public class TCPSourceConnectorTest {
     parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
 
 
-    TCPSourceConnector connector = new TCPSourceConnector();
+    AdapterSourceConnector connector = new AdapterSourceConnector();
     connector.start(parsedConfigs);
     List<Map<String, String>> configs = connector.taskConfigs(2);
     System.out.println(configs.get(0));
@@ -56,11 +56,11 @@ public class TCPSourceConnectorTest {
     parsedConfigs.put(TIMEOUT, TEST_TIMEOUT);
 
 
-    TCPSourceConnector connector = new TCPSourceConnector();
+    AdapterSourceConnector connector = new AdapterSourceConnector();
     connector.start(parsedConfigs);
     List<Map<String, String>> configs = connector.taskConfigs(2);
 
-    TCPSourceTask task = new TCPSourceTask();
+    AdapterSourceTask task = new AdapterSourceTask();
     task.start(configs.get(0));
     List<SourceRecord> records = task.poll();
     task.stop();
@@ -84,11 +84,11 @@ public class TCPSourceConnectorTest {
     MockAdapterService mockAdapterService = new MockAdapterService();
     new Thread(mockAdapterService).start();
 
-    TCPSourceConnector connector = new TCPSourceConnector();
+    AdapterSourceConnector connector = new AdapterSourceConnector();
     connector.start(parsedConfigs);
     List<Map<String, String>> configs = connector.taskConfigs(2);
 
-    TCPSourceTask task = new TCPSourceTask();
+    AdapterSourceTask task = new AdapterSourceTask();
     task.start(configs.get(0));
     while(true) {
       List<SourceRecord> records = task.poll();

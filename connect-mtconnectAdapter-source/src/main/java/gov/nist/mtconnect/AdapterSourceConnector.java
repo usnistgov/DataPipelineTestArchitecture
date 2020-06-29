@@ -11,18 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TCPSourceConnector extends SourceConnector {
-  public static final String IP_ADDRESS = TCPSourceTask.IP_ADDRESS;
-  public static final String PORT = TCPSourceTask.PORT;
-  public static final String TOPIC_CONFIG = TCPSourceTask.TOPIC_CONFIG;
-  public static final String LINGER_MS = TCPSourceTask.LINGER_MS;
-  public static final String BATCH_SIZE = TCPSourceTask.BATCH_SIZE;
-  public static final String SPLIT_SHDR = TCPSourceTask.SPLIT_SHDR;
-  public static final String MAX_CONNECTION_ATTEMPTS = TCPSourceTask.MAX_CONNECTION_ATTEMPTS;
-  public static final String TIMEOUT = TCPSourceTask.TIMEOUT;
+public class AdapterSourceConnector extends SourceConnector {
+  public static final String IP_ADDRESS = AdapterSourceTask.IP_ADDRESS;
+  public static final String PORT = AdapterSourceTask.PORT;
+  public static final String TOPIC_CONFIG = AdapterSourceTask.TOPIC_CONFIG;
+  public static final String LINGER_MS = AdapterSourceTask.LINGER_MS;
+  public static final String BATCH_SIZE = AdapterSourceTask.BATCH_SIZE;
+  public static final String SPLIT_SHDR = AdapterSourceTask.SPLIT_SHDR;
+  public static final String MAX_CONNECTION_ATTEMPTS = AdapterSourceTask.MAX_CONNECTION_ATTEMPTS;
+  public static final String TIMEOUT = AdapterSourceTask.TIMEOUT;
 
-  private static Logger log = LoggerFactory.getLogger(TCPSourceConnector.class);
-  private TCPSourceConnectorConfig config;
+  private static Logger log = LoggerFactory.getLogger(AdapterSourceConnector.class);
+  private AdapterSourceConnectorConfig config;
 
   @Override
   public String version() {
@@ -32,7 +32,7 @@ public class TCPSourceConnector extends SourceConnector {
   @Override
   public void start(Map<String, String> props) {
     log.info("Starting up MTConnect Source Connector");
-    config = new TCPSourceConnectorConfig(props);
+    config = new AdapterSourceConnectorConfig(props);
 
     //TODO: Add things you need to do to setup your connector.
   }
@@ -40,7 +40,7 @@ public class TCPSourceConnector extends SourceConnector {
   @Override
   public Class<? extends Task> taskClass() {
     //TODO: Return your task implementation.
-    return TCPSourceTask.class;
+    return AdapterSourceTask.class;
   }
 
   @Override
@@ -80,6 +80,6 @@ public class TCPSourceConnector extends SourceConnector {
 
   @Override
   public ConfigDef config() {
-    return TCPSourceConnectorConfig.conf();
+    return AdapterSourceConnectorConfig.conf();
   }
 }

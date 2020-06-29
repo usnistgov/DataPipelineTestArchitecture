@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class TCPSourceTaskTest {
+public class AdapterSourceTaskTest {
   public static final String IP_ADDRESS = "ip_address";
   public static final String PORT = "port";
   public static final String TOPIC_CONFIG = "topic_config";
@@ -29,7 +29,7 @@ public class TCPSourceTaskTest {
     properties.put(SPLIT_SHDR, "true");
     properties.put(MAX_CONNECTION_ATTEMPTS, "2");
     properties.put(TIMEOUT, "30000");
-    TCPSourceTask task = new TCPSourceTask();
+    AdapterSourceTask task = new AdapterSourceTask();
     task.start(properties);
     List<SourceRecord> output = task.poll();
     System.out.println(output.get(1).toString());

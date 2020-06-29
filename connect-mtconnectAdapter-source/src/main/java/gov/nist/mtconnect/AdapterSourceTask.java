@@ -13,8 +13,8 @@ import java.util.*;
 import static java.lang.Math.min;
 import static org.apache.kafka.common.utils.Utils.sleep;
 
-public class TCPSourceTask extends SourceTask{
-  static final Logger log = LoggerFactory.getLogger(TCPSourceTask.class);
+public class AdapterSourceTask extends SourceTask{
+  static final Logger log = LoggerFactory.getLogger(AdapterSourceTask.class);
   public static final String IP_ADDRESS = "ip_address";
   public static final String PORT = "port";
   public static final String TOPIC_CONFIG = "topic_config";

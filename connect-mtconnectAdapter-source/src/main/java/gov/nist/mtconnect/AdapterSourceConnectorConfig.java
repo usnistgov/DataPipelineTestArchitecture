@@ -8,38 +8,38 @@ import org.apache.kafka.common.config.ConfigDef.Type;
 import java.util.Map;
 
 
-public class  TCPSourceConnectorConfig extends AbstractConfig {
+public class AdapterSourceConnectorConfig extends AbstractConfig {
 
-  public static final String IP_ADDRESS_CONFIG = TCPSourceTask.IP_ADDRESS;
+  public static final String IP_ADDRESS_CONFIG = AdapterSourceTask.IP_ADDRESS;
   private static final String IP_ADDRESS_DOC = "This is a setting important to my connector.";
 
-  public static final String PORT_CONFIG = TCPSourceTask.PORT;
+  public static final String PORT_CONFIG = AdapterSourceTask.PORT;
   private static final String PORT_DOC = "This is a setting important to my connector.";
 
-  public static final String TOPIC_CONFIG = TCPSourceTask.TOPIC_CONFIG;
+  public static final String TOPIC_CONFIG = AdapterSourceTask.TOPIC_CONFIG;
   private static final String TOPIC_CONFIG_DOC = "This is a setting important to my connector.";
 
-  public static final String BATCH_SIZE_CONFIG = TCPSourceTask.BATCH_SIZE;
+  public static final String BATCH_SIZE_CONFIG = AdapterSourceTask.BATCH_SIZE;
   private static final String BATCH_SIZE_DOC = "This is a setting important to my connector.";
 
-  public static final String LINGER_MS_CONFIG = TCPSourceTask.LINGER_MS;
+  public static final String LINGER_MS_CONFIG = AdapterSourceTask.LINGER_MS;
   private static final String LINGER_MS_DOC = "This is a setting important to my connector.";
 
-  public static final String SPLIT_SHDR_CONFIG = TCPSourceTask.SPLIT_SHDR;
+  public static final String SPLIT_SHDR_CONFIG = AdapterSourceTask.SPLIT_SHDR;
   private static final String SPLIT_SHDR_DOC = "This is a setting important to my connector.";
 
-  public static final String MAX_CONNECTION_ATTEMPTS_CONFIG = TCPSourceTask.MAX_CONNECTION_ATTEMPTS;
+  public static final String MAX_CONNECTION_ATTEMPTS_CONFIG = AdapterSourceTask.MAX_CONNECTION_ATTEMPTS;
   private static final String  MAX_CONNECTION_ATTEMPTS_DOC = "This is a setting important to my connector.";
 
 
-  public static final String TIMEOUT_CONFIG = TCPSourceTask.TIMEOUT;
+  public static final String TIMEOUT_CONFIG = AdapterSourceTask.TIMEOUT;
   private static final String TIMEOUT_DOC = "This is a setting important to my connector.";
 
-  public TCPSourceConnectorConfig(ConfigDef config, Map<String, String> parsedConfig) {
+  public AdapterSourceConnectorConfig(ConfigDef config, Map<String, String> parsedConfig) {
     super(config, parsedConfig);
   }
 
-  public TCPSourceConnectorConfig(Map<String, String> parsedConfig) {
+  public AdapterSourceConnectorConfig(Map<String, String> parsedConfig) {
     this(conf(), parsedConfig);
   }
 
