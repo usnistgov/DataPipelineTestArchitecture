@@ -1,12 +1,14 @@
 {
     "name": "mtconnectAdapter-source-connector",
     "config": {
-        "connector.class": "gov.nist.mtconnect.TCPSourceConnector",
+        "connector.class": "gov.nist.mtconnect.AdapterSourceConnector",
         "tasks.max": 1,
 	"ip_address": "127.0.0.1",
 	"port": "7878",
 	"topic_config": "VMC-3Axis_SHDR",
 	"batch_size": "100",
-	"linger_ms": "10000"
+	"linger_ms": "10000",
+	"value.converter":"org.apache.kafka.connect.storage.StringConverter",
+	"value.converter.schemas.enable":"false"
     }
 }

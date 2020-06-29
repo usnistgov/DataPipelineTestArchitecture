@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>gov.nist.mtconnect</groupId>
-    <artifactId>connect-mtconnectTcp-source</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>connect-mtconnectAdapter-source</artifactId>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>connect-mtconnectTcp-source</name>
+    <name>connect-mtconnectAdapter-source</name>
 
     <properties>
         <kafka.version>0.10.0.0-cp1</kafka.version>
@@ -16,26 +16,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>connect-api</artifactId>
-            <version>${kafka.version}</version>
-            <scope>provided</scope>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20200518</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>connect-api</artifactId>
-            <version>2.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20200518</version>
+            <version>${kafka.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -70,6 +65,9 @@
                     <descriptors>
                         <descriptor>src/main/assembly/package.xml</descriptor>
                     </descriptors>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
                 <executions>
                     <execution>

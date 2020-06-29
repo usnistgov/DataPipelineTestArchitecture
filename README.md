@@ -65,16 +65,16 @@ The following software versions were used for this implementation:
   - http://mtcup.org/wiki/Installing_C%2B%2B_Agent_on_Ubuntu
   - Once you do, you can start the adapter:
     - `/usr/bin/ruby /etc/mtconnect/adapter/run_scenario.rb -l /etc/mtconnect/adapter/VMC-3Axis-Log.txt`
-- Edit the `$KafkaConfig/connect-mtconnectTCP-source.json` file
+- Edit the `$KafkaConfig/connect-mtconnectAdapter-source.json` file
   - `"ip_address": "127.0.0.1",` (this is localhost for the adapter simulation)
   - `"port": "7878",` (this is the default port for adapters)
   - `"topic_config": "VMC-3Axis_SHDR",`
 - Add the topic
   - `$KAFKA/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic VMC-3Axis_SHDR`
 - Start the connector: 
-  - `curl -d @$KafkaConfig/connect-mtconnectTCP-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
+  - `curl -d @$KafkaConfig/connect-mtconnectAdapter-source.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors`
 - watch your data stream into kafka for hours on end
-  - `$KAFKA/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic VMC-3Axis_SHDR --from-beginning
+  - `$KAFKA/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic VMC-3Axis_SHDR --from-beginning`
 
 ### 3x) Other helpful curl commands:
 - See what connectors are running: `curl -X GET http://localhost:8083/connectors`
