@@ -14,17 +14,15 @@ public class AdapterSourceConnectorTest {
   public static final String TOPIC_CONFIG = AdapterSourceTask.TOPIC_CONFIG;
   public static final String LINGER_MS = AdapterSourceTask.LINGER_MS;
   public static final String BATCH_SIZE = AdapterSourceTask.BATCH_SIZE;
-  public static final String SPLIT_SHDR = AdapterSourceTask.SPLIT_SHDR;
   public static final String MAX_CONNECTION_ATTEMPTS = AdapterSourceTask.MAX_CONNECTION_ATTEMPTS;
   public static final String TIMEOUT = AdapterSourceTask.TIMEOUT;
 
   public static final String TEST_IP_ADDRESS = "127.0.0.1";
   public static final String TEST_PORT = "7878";
   public static final String TEST_TOPIC_CONFIG = "VMC-3Axis_SHDR";
-  public static final String TEST_LINGER_MS = "10000";
-  public static final String TEST_BATCH_SIZE = "100";
-  public static final String TEST_SPLIT_SHDR = "true";
-  public static final String TEST_CONNECTION_ATTEMPTS = "5";
+  public static final String TEST_LINGER_MS = "1000";
+  public static final String TEST_BATCH_SIZE = "10";
+  public static final String TEST_CONNECTION_ATTEMPTS = "3";
   public static final String TEST_TIMEOUT = "60000";
 
   @Test
@@ -35,7 +33,6 @@ public class AdapterSourceConnectorTest {
     parsedConfigs.put(TOPIC_CONFIG, TEST_TOPIC_CONFIG);
     parsedConfigs.put(LINGER_MS, TEST_LINGER_MS);
     parsedConfigs.put(BATCH_SIZE, TEST_BATCH_SIZE);
-    parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
 
 
     AdapterSourceConnector connector = new AdapterSourceConnector();
@@ -51,10 +48,11 @@ public class AdapterSourceConnectorTest {
     parsedConfigs.put(TOPIC_CONFIG, TEST_TOPIC_CONFIG);
     parsedConfigs.put(LINGER_MS, TEST_LINGER_MS);
     parsedConfigs.put(BATCH_SIZE, TEST_BATCH_SIZE);
-    parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
     parsedConfigs.put(MAX_CONNECTION_ATTEMPTS, TEST_CONNECTION_ATTEMPTS);
     parsedConfigs.put(TIMEOUT, TEST_TIMEOUT);
 
+    MockAdapterService mockAdapterService = new MockAdapterService();
+    new Thread(mockAdapterService).start();
 
     AdapterSourceConnector connector = new AdapterSourceConnector();
     connector.start(parsedConfigs);
@@ -77,7 +75,6 @@ public class AdapterSourceConnectorTest {
     parsedConfigs.put(TOPIC_CONFIG, TEST_TOPIC_CONFIG);
     parsedConfigs.put(LINGER_MS, TEST_LINGER_MS);
     parsedConfigs.put(BATCH_SIZE, TEST_BATCH_SIZE);
-    parsedConfigs.put(SPLIT_SHDR, TEST_SPLIT_SHDR);
     parsedConfigs.put(MAX_CONNECTION_ATTEMPTS, "4");
     parsedConfigs.put(TIMEOUT, TEST_TIMEOUT);
 

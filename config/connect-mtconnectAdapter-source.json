@@ -7,7 +7,6 @@
 	"port": "7878",
 	"topic_config": "VMC-3Axis_SHDR",
 	"batch_size": "100",
-	"linger_ms": "10000",
-	"split_shdr": "true"
+	"linger_ms": "10000"
     }
 }

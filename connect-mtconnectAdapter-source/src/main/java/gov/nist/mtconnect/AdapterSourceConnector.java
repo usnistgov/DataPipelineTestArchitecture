@@ -17,7 +17,6 @@ public class AdapterSourceConnector extends SourceConnector {
   public static final String TOPIC_CONFIG = AdapterSourceTask.TOPIC_CONFIG;
   public static final String LINGER_MS = AdapterSourceTask.LINGER_MS;
   public static final String BATCH_SIZE = AdapterSourceTask.BATCH_SIZE;
-  public static final String SPLIT_SHDR = AdapterSourceTask.SPLIT_SHDR;
   public static final String MAX_CONNECTION_ATTEMPTS = AdapterSourceTask.MAX_CONNECTION_ATTEMPTS;
   public static final String TIMEOUT = AdapterSourceTask.TIMEOUT;
 
@@ -63,7 +62,6 @@ public class AdapterSourceConnector extends SourceConnector {
       taskConfig.put(TOPIC_CONFIG, splitTopics[i]);
       taskConfig.put(LINGER_MS, config.getString(LINGER_MS));
       taskConfig.put(BATCH_SIZE, config.getString(BATCH_SIZE));
-      taskConfig.put(SPLIT_SHDR, config.getString(SPLIT_SHDR));
       taskConfig.put(MAX_CONNECTION_ATTEMPTS,config.getString(MAX_CONNECTION_ATTEMPTS));
       taskConfig.put(TIMEOUT, config.getString(TIMEOUT));
       configs.add(taskConfig);

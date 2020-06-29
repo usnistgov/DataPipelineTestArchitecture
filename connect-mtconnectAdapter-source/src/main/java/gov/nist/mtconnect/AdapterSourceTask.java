@@ -5,6 +5,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.json.*;
 
 import java.io.*;
 import java.net.*;
@@ -51,7 +52,6 @@ public class AdapterSourceTask extends SourceTask{
     batchSize = Long.parseLong(properties.get(BATCH_SIZE));
     lingerMs = Long.parseLong(properties.get(LINGER_MS));
     topic = properties.get(TOPIC_CONFIG);
-    split_shdr = Boolean.parseBoolean(properties.get(SPLIT_SHDR));
     maxConnectionAttempts = Integer.parseInt(properties.get(MAX_CONNECTION_ATTEMPTS));
     timeout = Long.parseLong(properties.get(TIMEOUT));
 
@@ -186,53 +186,29 @@ public class AdapterSourceTask extends SourceTask{
 
 
   private List<SourceRecord> StreamToRecords(ArrayList<String> rawRecords){
+    //Streaming SHDR is in the form "timestamp|key1|value1|key2|value2|....
+    //1) Split into "timestamp|key1|value1" "timestamp|key2|value2"
+    //2) then convert to JSON
+
     ArrayList<SourceRecord> records = new ArrayList<>();
     Map<String, String> sourcePartition = new HashMap<String, String>();
     sourcePartition.put(IP_ADDRESS, this.ip_address);
 
-    //Optionally split SHDR into individual timestamp|key|value records
-    //Wanted to excise the split shdr code into its own method, but I need the key too
-    if (split_shdr){
-      String[] rawSHDR;
-      String timestamp;
-      String key;
-      String value;
-      String processedSHDR;
-      for (int i = 0; i < rawRecords.size(); i++) {
-        rawSHDR = rawRecords.get(i).split("\\|");
-        timestamp = rawSHDR[0];
-        for (int j = 1; j < rawSHDR.length - 1; j = j + 2) {
-          key = rawSHDR[j];
-          value = rawSHDR[j + 1];
-          processedSHDR = timestamp + "|" + key + "|" + value;
-          records.add(new SourceRecord(sourcePartition, null, this.topic,null,null, key, null, processedSHDR));
-        }
-      }
-    }
-    else {
-      for (int i = 0; i < rawRecords.size(); i++) {
-        records.add(new SourceRecord(sourcePartition, null, this.topic,null,null, null, null, rawRecords.get(i)));
-      }
-
-    }
-    return records;
-  }
-  private ArrayList<String> splitSHDR(ArrayList<String> rawRecords) {
-    ArrayList<String> processedRecords = new ArrayList<String>();
     String[] rawSHDR;
-    String timestamp;
-    String key;
-    String value;
+    JSONObject jsonSHDR;
     for (int i = 0; i < rawRecords.size(); i++) {
       rawSHDR = rawRecords.get(i).split("\\|");
-      timestamp = rawSHDR[0];
       for (int j = 1; j < rawSHDR.length - 1; j = j + 2) {
-        key = rawSHDR[j];
-        value = rawSHDR[j + 1];
-        processedRecords.add(timestamp + "|" + key + "|" + value);
+        jsonSHDR = new JSONObject();
+        jsonSHDR.put("timestamp", rawSHDR[0])
+                .put("key", rawSHDR[j])
+                .put("value", rawSHDR[j + 1]);
+        records.add(new SourceRecord(sourcePartition, null, this.topic,null,null, rawSHDR[j], null, jsonSHDR));
       }
     }
-    return processedRecords;
+
+    return records;
   }
+
 
 }
