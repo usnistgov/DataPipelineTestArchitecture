@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file=/home/tim/Kafka/ProcessIDs.txt
+file=$KAFKA/logs/ProcessIDs.txt
 while read -r line
 do
   a=( $line )
