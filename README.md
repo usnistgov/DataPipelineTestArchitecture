@@ -10,7 +10,9 @@ The following software versions were used for this implementation:
 - Apache Kafka 2.5.0: https://www.apache.org/dyn/closer.cgi?path=/kafka/2.5.0/kafka_2.12-2.5.0.tgz
 - Apache Spark 3.0.0 pre-built for Hadoop 3.2: https://www.apache.org/dyn/closer.lua/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz
 - Apache Hadoop 3.2.1: https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz
-- Eclipse Mosquitto 1.6.10: https://mosquitto.org/download/ (https://mosquitto.org/files/source/mosquitto-1.6.10.tar.gz)
+- Eclipse Mosquitto 1.6.10: https://mosquitto.org/download/
+  - add mosquitto to repository list: `sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa`
+  - install mosquitto: `sudo apt-get install mosquitto`
 - Python 3.6.10: https://www.python.org/downloads/release/python-3610/
   - Python 3.7 messed up ubuntu 18.04
 - Java OpenJdk 11: https://openjdk.java.net/projects/jdk/11/
@@ -85,7 +87,14 @@ The following software versions were used for this implementation:
 
  
 ## 5) MQTT: Installing Eclipse Mosquitto, connecting it to Kafka, and connecting it to a sensor.
-- Next on the to-do list (writing the documentation)
+
+### 5a) Set-up mosquitto.conf and start mosquitto
+
+- `mosquitto [-c config file] [ -d | --daemon ] [-p port number] [-v]`
+- **Note:** This probably should be added to the default start script
+- **To Do:** mosquitto.conf file
+
+### 5b) Add MQTT Connector to Kafka Connect
 
 
 ## 6) Set up Spark and Run Streaming Application
