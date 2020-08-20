@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -i
 
 # script to start zookeeper, kafka, and the distributed connector
 # can be used as a template to spin up distributed kafka nodes 
