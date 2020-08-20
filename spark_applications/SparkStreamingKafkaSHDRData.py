@@ -22,14 +22,16 @@
 
 /// Running our spark program to process SHDR data: ///
 
-
 for spark version 3.0.0-bin-hadoop3.2 with Kafka broker version 0.10.0 or higher 
 
-./bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0,\
+$ $SPARK/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0,\
 org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.0.0 \
-/Users/sar6/Documents/TimSprockProject/DataPipelineTestArchitecture/spark_applications/SparkStreamingKafkaSHDRData.py \
+$DATAPIPELINE/spark_applications/SparkStreamingKafkaSHDRData.py \
 localhost:9092 subscribe VMC-3Axis_SHDR
 
+/// To see data streaming into output kafka topic:
+
+$ $KAFKA/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic VMC-3Axis_Ycom
 
 
 """
@@ -170,8 +172,8 @@ if __name__ == "__main__":
 
     # Group the data by window and key, and compute the average of each group (using kafka timestamp)
 
-    windowDuration = "2 minutes" # gives the size of window, specified as integer number of seconds
-    slideDuration = "1 minutes" # gives the amount of time successive windows are offset from one another,
+    windowDuration = "1 minutes" # gives the size of window, specified as integer number of seconds
+    slideDuration = "30 seconds" # gives the amount of time successive windows are offset from one another,
     lateThreshold = "0 minutes" # how late is the data allowed to be
 
     # should change this to be done based on sensor timestamp, not kafka event timestamp ?
@@ -227,8 +229,18 @@ if __name__ == "__main__":
 
     # PLEASE NOTE: so far able to write any processed data frame to kafka topic, except for streaming aggregates
     # try writing avgVals instead of Ycom_DF, but use only append or udpate modes
-    query_kafka = avgVals\
-        .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
+    # query_kafka = avgVals\
+    #     .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
+    #     .writeStream\
+    #     .format('kafka')\
+    #     .option("kafka.bootstrap.servers", "localhost:9092")\
+    #     .option('truncate', 'false')\
+    #     .option("topic", "VMC-3Axis_Ycom")\
+    #     .option("checkpointLocation", "checkpoint")\
+    #     .outputMode('append')\
+    #     .start()
+
+    query_kafka = Ycom_DF\
         .writeStream\
         .format('kafka')\
         .option("kafka.bootstrap.servers", "localhost:9092")\
@@ -238,10 +250,13 @@ if __name__ == "__main__":
         .outputMode('append')\
         .start()
 
+
+
         # .option("checkpointLocation", "~/Documents/TimSprockProject/Experiment/checkpoint")\
 
     # try this query with either append or update and see if it works?
 
     # query_avg.awaitTermination()
     query_kafka.awaitTermination()
+
 
