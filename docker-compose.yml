@@ -1,0 +1,127 @@
+version: '3.3'
+ 
+services:
+  mosquitto:
+    image: eclipse-mosquitto:1.6
+    restart: unless-stopped
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+  zookeeper:
+    image: zookeeper:3.6.2
+    restart: unless-stopped
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    expose:
+      - "2181"
+#    environment:
+#        ZOO_MY_ID: 1
+#        ZOO_PORT: 2181
+#        ZOO_SERVERS: server.1=172.25.0.11:2888:3888
+    volumes:
+      - ./zookeeper/data:/data
+      - ./zookeeper/datalog:/datalog
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.11
+  kafka:
+    image: wurstmeister/kafka:2.12-2.2.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    expose:
+      - "9093"
+    environment:
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: "172.25.0.11:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - ./kafka/data:/var/lib/kafka/data
+    depends_on:
+      - zookeeper
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.12
+  connect-distributed-mtconnectagent:
+    build:
+      context: ./distributed-connect-MTConnectAgent-source
+      dockerfile: Dockerfile
+    container_name: connect-distributed-MTConnectAgent
+    command: [/usr/bin/start-connect.sh]
+    ports:
+      - 8084:8084
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "172.25.0.11:2181"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.25.0.12:9092,PLAINTEXT_HOST://172.25.0.12:29092
+      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:29092   
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    depends_on:
+      - kafka
+    volumes:
+      - ./distributed-connect-MTConnectAgent-source/connect-output-file:/tmp
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.13
+  connect-standalone-mtconnectagent:
+    build:
+      context: ./standalone-connect-MTConnectAgent-source
+      dockerfile: Dockerfile
+    container_name: connect-standalone-MTConnectAgent
+    command: [/usr/bin/start-connect.sh]
+    ports:
+      - 8083:8083
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "172.25.0.11:2181"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.25.0.12:9092,PLAINTEXT_HOST://172.25.0.12:29092
+      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:29092   
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    depends_on:
+      - kafka
+    volumes:
+      - ./standalone-connect-MTConnectAgent-source/connect-output-file:/tmp
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.14
+
+
+#  mongo-db:
+#    image: mongo:4.0.5
+#    hostname: mongo-db
+#    container_name: mongo-db
+#    expose:
+#      - "27017"
+#    ports:
+#      - "27017:27017"
+#    command: --bind_ip_all --smallfiles
+#    volumes:
+#      - ./mongo-db:/data
+#  mongoclient:
+#    image: mongoclient/mongoclient:2.2.0
+#    container_name: mongoclient
+#    hostname: mongoclient
+#    depends_on:
+#      - mongo-db
+#    ports:
+#      - 3000:3000
+#    environment:
+#      MONGO_URL: "mongodb://mongo-db:27017"
+#      PORT: 3000
+#    expose:
+#      - "3000"
+
+networks:
+  kafkanet:
+    name: kafkanet
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1

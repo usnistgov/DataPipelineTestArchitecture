@@ -1,0 +1,11 @@
+{
+    "name": "mtconnect-source-connector",
+    "config": {
+        "connector.class": "gov.nist.mtconnect.MTConnectSourceConnector",
+        "tasks.max": 1,
+        "topics": "M80104K162N_XML2",
+        "agent_url": "http://mtconnect.mazakcorp.com:5612",
+	"device_path": "",
+	"topic_config": "M80104K162N_XML2"
+    }
+}
