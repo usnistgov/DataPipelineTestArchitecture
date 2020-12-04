@@ -28,6 +28,7 @@ services:
         ipv4_address: 172.25.0.11
   kafka:
     image: wurstmeister/kafka:2.12-2.2.0
+    restart: unless-stopped
     hostname: kafka
     container_name: kafka
     ports:
@@ -50,6 +51,7 @@ services:
       kafkanet:
         ipv4_address: 172.25.0.12
   connect-distributed-mtconnectagent:
+    restart: unless-stopped
     build:
       context: ./distributed-connect-MTConnectAgent-source
       dockerfile: Dockerfile
@@ -89,7 +91,21 @@ services:
     networks:
       kafkanet:
         ipv4_address: 172.25.0.14
-
+  zeppelin:
+    image: apache/zeppelin:0.9.0
+    hostname: zeppelin
+    container_name: zeppelin
+    expose:
+      - "8080"
+      - "8443"
+      - "4040"
+    volumes:
+      - ./zeppelin/datadrive:/datadrive
+      - ./zeppelin/pyspark-notebooks:/zeppelin/notebook
+      - ./zeppelin/zeppelin-interpreters/interpreter.json:/zeppelin/conf/interpreter.json
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.19
 
 #  mongo-db:
 #    image: mongo:4.0.5
